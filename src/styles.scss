@@ -1,4 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
+html, body, app-root { height: 100%; }
+app-root { display: block; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.page-expand {
+  width: 100%;
+  height: 100%;
+}

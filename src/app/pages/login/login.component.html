@@ -1,0 +1,19 @@
+<div class="login-container mat-elevation-z2">
+  <div class="image-container">
+    <img src="../../../assets/img/logo.png"/>
+  </div>
+  <form [formGroup]="loginForm" fxLayout="column">
+    <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password">
+    </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="center">
+        <button mat-raised-button color="accent" [disabled]="loginForm.invalid || loading"
+        (click)="signIn()">Sign in</button>
+    </div>
+</form>
+</div>
