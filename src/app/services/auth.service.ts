@@ -33,11 +33,11 @@ export class AuthService {
     return localStorage.removeItem('token');
   }
 
-  public getToken() : string | null {
+  public getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  isSignedIn() : boolean {
+  isSignedIn(): boolean {
     return this.getToken() != null;
   }
 
