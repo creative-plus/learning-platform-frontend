@@ -1,0 +1,42 @@
+<mat-menu #courseMenu="matMenu" xPosition="before">
+  <ng-template matMenuContent let-id="id">
+    <button mat-menu-item (click)="editCourse(id)">
+      <mat-icon>mode</mat-icon>
+      <span>Edit course</span>
+    </button>
+    <button mat-menu-item (click)="deleteCourse(id)">
+      <mat-icon>delete</mat-icon>
+      <span>Delete course</span>
+    </button>
+  </ng-template>
+</mat-menu>
+
+<div class="course-grid" fxLayout="row grid" fxLayoutGap="16px grid">
+  <div class="course-grid-inner" fxFlex="50" *ngFor="let course of courses">
+    <div class="course-card mat-elevation-z2">
+      <div class="course-cover-container">
+        <img src *ngIf="false" />
+        <div class="progress-bar-container" *ngIf="course.registration">
+          <mat-progress-bar [value]="course.registration.sections.length / (course.sectionNumber || 1) * 100">
+          </mat-progress-bar>
+        </div>
+        <div class="fab-container">
+          <button mat-fab *ngIf="perspective == 'trainer'" matTooltip="See leaderboard">
+            <mat-icon>leaderboard</mat-icon>
+          </button>
+        </div>
+        <div class="action-container" *ngIf="perspective == 'trainer'">
+          <button mat-icon-button [matMenuTriggerFor]="courseMenu" matTooltip="More...">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="course-text">
+        <div class="course-name">{{course.name}}</div>
+        <div class="course-description">
+          {{ course.description }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

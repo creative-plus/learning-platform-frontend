@@ -14,6 +14,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from "@angular/material/list";
+import { CourseListComponent } from './course-list/course-list.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 
 const materialDeps = [
@@ -34,15 +36,19 @@ const materialDeps = [
 
 @NgModule({
   declarations: [
-    LoadingComponent
+    LoadingComponent,
+    CourseListComponent
   ],
   imports: [
     CommonModule,
+    FlexLayoutModule,
     ...materialDeps,
   ],
   exports: [
     ...materialDeps,
     LoadingComponent,
+    CourseListComponent,
+    FlexLayoutModule,
   ]
 })
 export class SharedModule { }
