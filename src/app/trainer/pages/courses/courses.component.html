@@ -1,5 +1,5 @@
 <p fxLayout="row" fxLayoutAlign="end">
-  <button mat-raised-button color="primary">Add course</button>
+  <button mat-raised-button color="primary" (click)="addCourse()">Add course</button>
 </p>
 
 <app-course-list [courses]="courses"></app-course-list>

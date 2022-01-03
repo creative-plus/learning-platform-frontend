@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Course } from 'src/app/lib/models/course/Course';
 import { UserType } from 'src/app/lib/models/user/UserType';
 
@@ -9,7 +10,7 @@ import { UserType } from 'src/app/lib/models/user/UserType';
 })
 export class CourseListComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -18,7 +19,8 @@ export class CourseListComponent implements OnInit {
   @Input() perspective: UserType = 'trainer';
 
   editCourse(courseId: number) {
-
+    console.log(courseId)
+    this.router.navigate(["/trainer", "courses", courseId])
   }
 
   deleteCourse(courseId: number) {
