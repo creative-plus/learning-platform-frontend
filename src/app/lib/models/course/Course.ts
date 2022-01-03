@@ -1,3 +1,4 @@
+import { CourseSection } from "./course-sections/CourseSection";
 import { CourseRegistration } from "./CourseRegistration";
 
 export interface Course {
@@ -5,5 +6,6 @@ export interface Course {
   name: string;
   description: string;
   sectionNumber?: number;
+  sections?: CourseSection[];
   registration?: CourseRegistration;
 }
