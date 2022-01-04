@@ -93,7 +93,10 @@
                 <button mat-button (click)="addQuizQuestion(null, getQuizQuestions(section))">Add question</button>
               </div>
             </div>
-            <div class="separator hide-preview"></div>
+            <div class="separator show-selected hide-preview"></div>
+            <div class="more-icon hide-selected hide-preview" fxLayout="row" fxLayoutAlign="center">
+              <mat-icon class="muted">more_horiz</mat-icon>
+            </div>
             <div class="more-icon show-preview" fxLayout="row" fxLayoutAlign="center">
               <mat-icon class="muted">more_horiz</mat-icon>
             </div>
