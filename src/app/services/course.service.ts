@@ -19,10 +19,24 @@ export class CourseService {
     return this.http.get<Course[]>(url, this.auth.getPrivateHeaders());
   }
 
+  addCourse(course: Course): Observable<Course> {
+    const url = `${environment.apiUrl}/courses/`;
+    return this.http.post<Course>(url, course, this.auth.getPrivateHeaders()).pipe(
+      catchError(this.handleError<Course>('addCourse', null))
+    );
+  }
+
   getCourse(id: number): Observable<Course> {
     const url = `${environment.apiUrl}/courses/${id}`;
     return this.http.get<Course>(url, this.auth.getPrivateHeaders()).pipe(
-      catchError(this.handleError<Course>('getCourse', undefined))
+      catchError(this.handleError<Course>('getCourse', null))
+    );
+  }
+
+  editCourse(id: number, course: Course): Observable<Course> {
+    const url = `${environment.apiUrl}/courses/${id}`;
+    return this.http.put<Course>(url, course, this.auth.getPrivateHeaders()).pipe(
+      catchError(this.handleError<Course>('editCourse', null))
     );
   }
 

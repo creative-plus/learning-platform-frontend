@@ -66,7 +66,7 @@ export class CourseEditorComponent implements OnInit {
     const sectionFormGroup = new FormGroup({
       id: new FormControl(section?.id),
       title: new FormControl(section?.title, [Validators.required]),
-      type: new FormControl(section.type || "learning", [Validators.required]),
+      type: new FormControl(section?.type || "learning", [Validators.required]),
     });
     if(!section || section.type == 'learning') {
       const learningForm = new FormGroup({
@@ -117,10 +117,11 @@ export class CourseEditorComponent implements OnInit {
       description: new FormControl(this.initialCourse?.description, [Validators.maxLength(255)]),
       sections: new FormArray([], [ArrayLenghtValidator({ min: 1 })])
     });
-    this.initialCourse?.sections?.sort((a, b) => a.order - b.order)
+    (this.initialCourse?.sections || [null]).sort((a, b) => a?.order - b?.order)
       .forEach(section => this.addSection(section));
-    
-    this.selectedSectionIndex = null;
+
+    this.selectedSectionIndex = 0;
+    this.currentCourseStateIndex = null;
     this.courseStates.push(this.courseForm.value);
     this.subscribeToValueChanges(this.courseForm);
   }
@@ -209,6 +210,21 @@ export class CourseEditorComponent implements OnInit {
     this.safeSetFormValue(this.courseStates[newIndex]);
   }
 
+  addSectionBelow() {
+    let index = this.courseFormSections.controls.length - 1;
+    if(this.selectedSectionIndex != null) {
+      index = this.selectedSectionIndex + 1;
+    }
+    if(index < 0) index = 0;
+    this.addSection(null, index);
+  }
+  
+  setSelectedSection(sectionIndex: number, event: Event) {
+    event.stopPropagation();
+    this.selectedSectionIndex = sectionIndex;
+  }
+
+
   safeSetFormValue(value: FormValue) {
     const course = this.formValueToCourse(value);
     this.courseForm = new FormGroup({
@@ -224,12 +240,24 @@ export class CourseEditorComponent implements OnInit {
 
   formValueToCourse(value: FormValue): Course {
     const newValue = copyObject(value);
-    newValue.sections = newValue.sections.map(formSection => {
-      const section = { ...formSection, ...formSection.typeForm };
+    newValue.sections = newValue.sections.map((formSection, order) => {
+      const section = { ...formSection, ...formSection.typeForm, order };
       delete section.typeForm;
       return section;
     });
     return newValue;
+  }
+
+  saveCourse() {
+    const course = this.formValueToCourse(this.courseForm.value);
+    const action = isNaN(this.courseId) ? this.courseService.addCourse(course) : this.courseService.editCourse(this.courseId, course);
+    action.subscribe((course) => {
+      if(course) {
+        this.snackbar.open("Course saved.");
+        this.initialCourse = course;
+        this.courseId = course.id;
+      }
+    });
   }
 
   get canUndo() {
@@ -238,6 +266,10 @@ export class CourseEditorComponent implements OnInit {
 
   get canRedo() {
     return this.currentCourseStateIndex != null && this.currentCourseStateIndex + 1 < this.courseStates.length;
+  }
+
+  get canRemoveSections() {
+    return this.courseFormSections?.controls.length > 1;
   }
 
   editorConfig: AngularEditorConfig = { 

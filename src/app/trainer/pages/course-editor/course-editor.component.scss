@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
   .course-editor-toolbar {
     .save-button {
       margin-left: 8px;
@@ -18,6 +19,17 @@
       margin: 0 auto;
     }
   }
+}
+
+.actions-toolbar {
+  justify-content: center;
+  position: absolute;
+  bottom: 0;
+  max-width: 100px;
+  left: 50%;
+  height: 48px;
+  transform: translateX(-50%);
+  border-radius: 4px 4px 0 0;
 }
 
 .course-header-card {

@@ -19,7 +19,6 @@ export class CourseListComponent implements OnInit {
   @Input() perspective: UserType = 'trainer';
 
   editCourse(courseId: number) {
-    console.log(courseId)
     this.router.navigate(["/trainer", "courses", courseId])
   }
 
