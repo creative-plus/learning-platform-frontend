@@ -1,17 +1,20 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
-import { of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { of, Subscription } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs/operators';
 import { Course } from 'src/app/lib/models/course/Course';
 import { CourseSection } from 'src/app/lib/models/course/course-sections/CourseSection';
+import { CourseSectionType } from 'src/app/lib/models/course/course-sections/CourseSectionType';
 import { Learning } from 'src/app/lib/models/course/course-sections/Learning';
 import { Quiz } from 'src/app/lib/models/course/course-sections/quiz/Quiz';
 import { QuizQuestion } from 'src/app/lib/models/course/course-sections/quiz/QuizQuestion';
 import { QuizQuestionAnswer } from 'src/app/lib/models/course/course-sections/quiz/QuizQuestionAnswer';
 import { ArrayLenghtValidator } from 'src/app/lib/models/validators/ArrayLengthValidator';
+import { copyObject } from 'src/app/lib/util';
 import { CourseService } from 'src/app/services/course.service';
 
 @Component({
@@ -22,12 +25,17 @@ import { CourseService } from 'src/app/services/course.service';
 })
 export class CourseEditorComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute, private courseService: CourseService, private router: Router) { }
+  constructor(private route: ActivatedRoute, private courseService: CourseService, private router: Router,
+    private snackbar: MatSnackBar) { }
 
   initialCourse!: Course | null;
   courseId!: number | null;
 
   selectedSectionIndex = 0;
+
+  courseStates: FormValue[] = [];
+  currentCourseStateIndex: number | null;
+  courseValueChangesSubscription!: Subscription;
 
   courseForm = new FormGroup({
     name: new FormControl("", [Validators.required]),
@@ -85,7 +93,7 @@ export class CourseEditorComponent implements OnInit {
   addQuizQuestion(question?: QuizQuestion, formArray?: FormArray) {
     const questionFormGroup = new FormGroup({
       text: new FormControl(question?.text, [Validators.required]),
-      multipleAnswers: new FormControl(question?.multipleAnswer),
+      multipleAnswer: new FormControl(question?.multipleAnswer),
       answers: new FormArray([], [ArrayLenghtValidator({ min: 2, max: 6 })])
     });
     // Create a question with at least two answers 
@@ -111,7 +119,10 @@ export class CourseEditorComponent implements OnInit {
     });
     this.initialCourse?.sections?.sort((a, b) => a.order - b.order)
       .forEach(section => this.addSection(section));
-    console.log(this.courseForm.value)
+    
+    this.selectedSectionIndex = null;
+    this.courseStates.push(this.courseForm.value);
+    this.subscribeToValueChanges(this.courseForm);
   }
 
   sectionDrop(event: CdkDragDrop<string[]>) {
@@ -147,6 +158,11 @@ export class CourseEditorComponent implements OnInit {
     this.courseFormSections.controls.splice(sectionIndex, 1);
     const newSelected = sectionIndex - 1;
     this.selectedSectionIndex = newSelected >= 0 ? newSelected : 0;
+
+    this.addFormState(this.courseForm);
+    this.subscribeToValueChanges(this.courseForm);
+
+    this.snackbar.open("Section removed.", "Undo").onAction().subscribe(_ => this.undoAction());
   }
 
   duplicateSection(sectionIndex: number) {
@@ -158,6 +174,72 @@ export class CourseEditorComponent implements OnInit {
     this.selectedSectionIndex = sectionIndex + 1;
   }
 
+  subscribeToValueChanges(courseForm: FormGroup) {
+    this.courseValueChangesSubscription?.unsubscribe();
+    this.courseValueChangesSubscription = courseForm.valueChanges
+      .pipe(
+        debounceTime(1000)
+      )
+      .subscribe(_ => {
+        this.addFormState(courseForm);
+      });
+  }
+
+  addFormState(courseForm: FormGroup) {
+    if(this.currentCourseStateIndex != null) {
+      const deleteCount = this.courseStates.length - this.currentCourseStateIndex;
+      this.courseStates.splice(this.currentCourseStateIndex + 1, deleteCount);
+    }
+    this.courseStates.push(courseForm.value);
+    console.log(courseForm.value)
+    this.currentCourseStateIndex = null;
+  }
+
+  undoAction() {
+    const newIndex = this.currentCourseStateIndex == null ? this.courseStates.length - 2 : this.currentCourseStateIndex - 1;
+    if(newIndex < 0) return;
+    this.currentCourseStateIndex = newIndex;
+    this.safeSetFormValue(this.courseStates[newIndex]);
+  }
+
+  redoAction() {
+    if(!this.canRedo) return;
+    const newIndex = this.currentCourseStateIndex + 1;
+    this.currentCourseStateIndex = newIndex;
+    this.safeSetFormValue(this.courseStates[newIndex]);
+  }
+
+  safeSetFormValue(value: FormValue) {
+    const course = this.formValueToCourse(value);
+    this.courseForm = new FormGroup({
+      name: new FormControl(course?.name, [Validators.required]),
+      description: new FormControl(course?.description, [Validators.maxLength(255)]),
+      sections: new FormArray([], [ArrayLenghtValidator({ min: 1 })])
+    });
+    course?.sections?.sort((a, b) => a.order - b.order)
+      .forEach(section => this.addSection(section));
+    
+    this.subscribeToValueChanges(this.courseForm);
+  }
+
+  formValueToCourse(value: FormValue): Course {
+    const newValue = copyObject(value);
+    newValue.sections = newValue.sections.map(formSection => {
+      const section = { ...formSection, ...formSection.typeForm };
+      delete section.typeForm;
+      return section;
+    });
+    return newValue;
+  }
+
+  get canUndo() {
+    return (this.currentCourseStateIndex == null ? this.courseStates.length - 2 : this.currentCourseStateIndex - 1) >= 0;
+  }
+
+  get canRedo() {
+    return this.currentCourseStateIndex != null && this.currentCourseStateIndex + 1 < this.courseStates.length;
+  }
+
   editorConfig: AngularEditorConfig = { 
     editable: true,
     sanitize: true,
@@ -165,6 +247,18 @@ export class CourseEditorComponent implements OnInit {
       ['fontName']
     ]
   }
+}
+
+interface FormValue {
+  name: string;
+  description: string;
+  sections: SectionLike[];
+}
+
+interface SectionLike extends CourseSection {
+  title: string;
+  type: CourseSectionType;
+  typeForm: Learning | Quiz;
 }
 
 

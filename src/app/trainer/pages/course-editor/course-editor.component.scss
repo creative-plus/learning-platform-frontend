@@ -1,15 +1,22 @@
-.course-editor-toolbar {
-  .save-button {
-    margin-left: 8px;
-    min-width: 80px;
+.course-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .course-editor-toolbar {
+    .save-button {
+      margin-left: 8px;
+      min-width: 80px;
+    }
   }
-}
 
-.course-form-container {
-  padding: 16px;
-  .course-form-inner {
-    max-width: 800px;
-    margin: 0 auto;
+  .course-form-container {
+    padding: 16px;
+    flex: 1;
+    overflow: scroll;
+    .course-form-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
   }
 }
 

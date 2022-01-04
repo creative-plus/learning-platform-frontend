@@ -8,10 +8,10 @@
       <span *ngIf="!initialCourse">Add course</span>
     </div>
     <div class="toolbar-spacer"></div>
-    <button mat-icon-button matTooltip="Undo">
+    <button mat-icon-button matTooltip="Undo" (click)="undoAction()" [disabled]="!canUndo">
       <mat-icon>undo</mat-icon>
     </button>
-    <button mat-icon-button matTooltip="Redo">
+    <button mat-icon-button matTooltip="Redo" (click)="redoAction()" [disabled]="!canRedo">
       <mat-icon>redo</mat-icon>
     </button>
     <button mat-raised-button color="accent" class="save-button">Save</button>
@@ -67,7 +67,7 @@
                       </mat-form-field>
                       <div fxFlex="100" fxLayout="row" class="multiple-answer-toggle">
                         <div fxFlex="100">Multiple answer question</div>
-                        <mat-slide-toggle formControlName="multipleAnswers"></mat-slide-toggle>
+                        <mat-slide-toggle formControlName="multipleAnswer"></mat-slide-toggle>
                       </div>
                     </div>
                     <div class="question-answers" fxLayout="row grid" formGroupName="answers">
