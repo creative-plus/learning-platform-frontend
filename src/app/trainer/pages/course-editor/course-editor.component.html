@@ -44,7 +44,7 @@
               </mat-form-field>
               <mat-form-field class="course-title" fxFlex="30" appearance="outline">
                 <mat-label>Section type</mat-label>
-                <mat-select formControlName="type">
+                <mat-select formControlName="type" (valueChange)="changeSectionType(s, $event)">
                   <mat-option value="learning">Leaning</mat-option>
                   <mat-option value="quiz">Quiz</mat-option>
                 </mat-select>

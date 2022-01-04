@@ -126,6 +126,23 @@ export class CourseEditorComponent implements OnInit {
     return (question.get('answers') as FormArray);
   }
 
+  changeSectionType(sectionIndex: number, type: string) {
+    const sectionFormGroup = this.courseFormSections.controls[sectionIndex] as FormGroup;
+    sectionFormGroup.removeControl("typeForm");
+    if(type == 'learning') {
+      const learningForm = new FormGroup({
+        content: new FormControl("", [Validators.required])
+      });
+      sectionFormGroup.addControl("typeForm", learningForm);
+    } else {
+      const quizForm = new FormGroup({
+        questions: new FormArray([], [ArrayLenghtValidator({ min: 1, max: 10 })])
+      });
+      this.addQuizQuestion(null, quizForm.get("questions") as FormArray);
+      sectionFormGroup.addControl("typeForm", quizForm);
+    }
+  }
+
   removeSection(sectionIndex: number) {
     this.courseFormSections.controls.splice(sectionIndex, 1);
     const newSelected = sectionIndex - 1;
