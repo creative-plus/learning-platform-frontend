@@ -46,4 +46,16 @@ mat-icon {
   }
 }
 
+mat-list-item.no-padding {
+  .mat-list-item-content {
+    padding: 0!important;
+  }
+}
 
+mat-icon.muted {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.separator {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}

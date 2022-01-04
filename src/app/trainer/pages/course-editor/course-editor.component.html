@@ -1,1 +1,113 @@
-<p>course-editor works!</p>
+<div class="course-editor">
+  <mat-toolbar color="primary" class="course-editor-toolbar app-toolbar">
+    <button mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="toolbar-title">
+      <span *ngIf="initialCourse">Edit course</span>
+      <span *ngIf="!initialCourse">Add course</span>
+    </div>
+    <div class="toolbar-spacer"></div>
+    <button mat-icon-button matTooltip="Undo">
+      <mat-icon>undo</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Redo">
+      <mat-icon>redo</mat-icon>
+    </button>
+    <button mat-raised-button color="accent" class="save-button">Save</button>
+  </mat-toolbar>
+  <div class="course-form-container">
+    <div class="course-form-inner" [formGroup]="courseForm">
+      <mat-card class="course-header-card" fxLayout="row grid">
+        <mat-form-field class="course-title" fxFlex="100" appearance="standard">
+          <mat-label>Course title</mat-label>
+          <input matInput formControlName="name" type="text" name="courseName" />
+        </mat-form-field>
+        <mat-form-field class="course-description" fxFlex="100" appearance="standard">
+          <mat-label>Course description</mat-label>
+          <input matInput formControlName="description" type="text" name="courseDescription" />
+        </mat-form-field>
+      </mat-card>
+      <div cdkDropList class="course-sections" (cdkDropListDropped)="sectionDrop($event)" formArrayName="sections">
+        <mat-card cdkDrag class="course-section" *ngFor="let section of courseFormSections.controls; let s = index" 
+          [ngClass]="{ selected: s == selectedSectionIndex}"
+          (click)="selectedSectionIndex = s"
+        >
+          <div cdkDragHandle class="drag-handler" fxLayout="row" fxLayoutAlign="center">
+            <mat-icon class="muted">drag_handle</mat-icon>
+          </div>
+          <form [formGroupName]="s">
+            <div class="course-section-header" fxLayout="row" fxLayoutGap="10px">
+              <mat-form-field fxFlex="70" appearance="outline">
+                <mat-label>Section title</mat-label>
+                <input matInput formControlName="title" type="text" name="sectionTitle" />
+              </mat-form-field>
+              <mat-form-field class="course-title" fxFlex="30" appearance="outline">
+                <mat-label>Section type</mat-label>
+                <mat-select formControlName="type">
+                  <mat-option value="learning">Leaning</mat-option>
+                  <mat-option value="quiz">Quiz</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <!-- Learning -->
+            <div *ngIf="section.get('type').value == 'learning'" formGroupName="typeForm" class="section-body hide-preview">
+              <angular-editor formControlName="content" [config]="editorConfig" [id]="'editor' + s"></angular-editor>
+            </div>
+            <!-- Quiz -->
+            <div *ngIf="section.get('type').value == 'quiz'" formGroupName="typeForm" class="section-body hide-preview">
+              <h3>Questions</h3>
+              <div class="quiz-questions" formGroupName="questions">
+                <mat-card class="quiz-question" *ngFor="let question of getQuizQuestions(section).controls; let q = index">
+                  <form [formGroupName]="q">
+                    <div class="question-header" fxLayout="row grid">
+                      <mat-form-field fxFlex="100" appearance="outline">
+                        <mat-label>Question {{ q + 1 }}</mat-label>
+                        <input matInput formControlName="text" type="text" name="questionText" />
+                      </mat-form-field>
+                      <div fxFlex="100" fxLayout="row" class="multiple-answer-toggle">
+                        <div fxFlex="100">Multiple answer question</div>
+                        <mat-slide-toggle formControlName="multipleAnswers"></mat-slide-toggle>
+                      </div>
+                    </div>
+                    <div class="question-answers" fxLayout="row grid" formGroupName="answers">
+                      <div class="question-answer"
+                        *ngFor="let answer of getQuizQuestionAnswers(question).controls; let a = index"
+                        [formGroupName]="a"
+                        fxLayout="row"
+                        fxFlex="100"
+                      >
+                        <mat-checkbox formControlName="correct"></mat-checkbox>
+                        <mat-form-field fxFlex="100" appearance="outline">
+                          <mat-label>Answer {{ a + 1 }}</mat-label>
+                          <input matInput formControlName="text" type="text" name="questionText" />
+                        </mat-form-field>
+                      </div>
+                      <button mat-button 
+                        (click)="addQuizQuestionAnswer(null, getQuizQuestionAnswers(question))"
+                        [disabled]="getQuizQuestionAnswers(question).controls.length >= 6"
+                        >Add answer</button>
+                    </div>
+                  </form>
+                </mat-card>
+                <button mat-button (click)="addQuizQuestion(null, getQuizQuestions(section))">Add question</button>
+              </div>
+            </div>
+            <div class="separator hide-preview"></div>
+            <div class="more-icon show-preview" fxLayout="row" fxLayoutAlign="center">
+              <mat-icon class="muted">more_horiz</mat-icon>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="end" class="course-section-footer">
+              <button mat-icon-button matTooltip="Duplicate" (click)="duplicateSection(s)">
+                <mat-icon>copy</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Remove" (click)="removeSection(s)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </form>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

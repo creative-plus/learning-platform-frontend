@@ -1,0 +1,127 @@
+.course-editor-toolbar {
+  .save-button {
+    margin-left: 8px;
+    min-width: 80px;
+  }
+}
+
+.course-form-container {
+  padding: 16px;
+  .course-form-inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+.course-header-card {
+  overflow: hidden;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: #3f51b5;
+    top: 0;
+  }
+
+  .course-title {
+    margin-top: 8px;
+    margin-bottom: -8px;
+    input {
+      font-size: 32px;
+    }
+  }
+}
+
+.course-section {
+  margin-top: 16px;
+  display: block;
+  position: relative;
+  overflow: hidden;
+
+  &.selected {
+    .section-body {
+      display: block;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 6px;
+      background: #3f51b5;
+    }
+  }
+
+  .drag-handler, .more-icon {
+    margin-top: -8px;
+    margin-bottom: 4px;
+  }
+
+  .drag-handler {
+    cursor: move;
+  }
+
+  .show-preview {
+    display: none!important;
+  }
+
+  .course-section-footer {
+    margin-top: 8px;
+  }
+
+  .section-body {
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  .quiz-question {
+    margin-bottom: 12px;
+
+    .multiple-answer-toggle {
+      margin-top: -4px;
+      margin-bottom: 16px;
+    }
+
+    .question-answer {
+      display: flex;
+      align-items: center;
+      mat-checkbox {
+        margin-bottom: 16px;
+        margin-right: 16px;
+      }
+    }
+  }
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
+
+  height: 190px!important;
+
+  .show-preview {
+    display: flex!important;
+  }
+
+  .hide-preview {
+    display: none!important;
+  }
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+  height: 190px!important;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.course-sections.cdk-drop-list-dragging .course-section:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}

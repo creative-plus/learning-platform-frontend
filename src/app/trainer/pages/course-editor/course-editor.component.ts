@@ -1,6 +1,8 @@
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Course } from 'src/app/lib/models/course/Course';
@@ -15,7 +17,8 @@ import { CourseService } from 'src/app/services/course.service';
 @Component({
   selector: 'app-course-editor',
   templateUrl: './course-editor.component.html',
-  styleUrls: ['./course-editor.component.scss']
+  styleUrls: ['./course-editor.component.scss'],
+  
 })
 export class CourseEditorComponent implements OnInit {
 
@@ -23,6 +26,8 @@ export class CourseEditorComponent implements OnInit {
 
   initialCourse!: Course | null;
   courseId!: number | null;
+
+  selectedSectionIndex = 0;
 
   courseForm = new FormGroup({
     name: new FormControl("", [Validators.required]),
@@ -49,8 +54,9 @@ export class CourseEditorComponent implements OnInit {
 
   get courseFormSections() { return this.courseForm.get("sections") as FormArray };
 
-  addSection(section?: CourseSection): void {
+  addSection(section?: CourseSection, atIndex?: number): void {
     const sectionFormGroup = new FormGroup({
+      id: new FormControl(section?.id),
       title: new FormControl(section?.title, [Validators.required]),
       type: new FormControl(section.type || "learning", [Validators.required]),
     });
@@ -69,19 +75,23 @@ export class CourseEditorComponent implements OnInit {
       }
       sectionFormGroup.addControl("typeForm", quizForm);
     }
-    this.courseFormSections.push(sectionFormGroup);
+    if(atIndex != null) {
+      this.courseFormSections.controls.splice(atIndex, 0, sectionFormGroup);
+    } else {
+      this.courseFormSections.push(sectionFormGroup);
+    }
   }
 
   addQuizQuestion(question?: QuizQuestion, formArray?: FormArray) {
     const questionFormGroup = new FormGroup({
       text: new FormControl(question?.text, [Validators.required]),
-      multipleAnswers: new FormControl(question.multipleAnswer),
+      multipleAnswers: new FormControl(question?.multipleAnswer),
       answers: new FormArray([], [ArrayLenghtValidator({ min: 2, max: 6 })])
     });
-    if(question) {
-      question.answers.forEach(answer => 
-        this.addQuizQuestionAnswer(answer, questionFormGroup.get("answers") as FormArray));
-    }
+    // Create a question with at least two answers 
+    (question?.answers || [null, null]).forEach(answer => 
+      this.addQuizQuestionAnswer(answer, questionFormGroup.get("answers") as FormArray));
+
     formArray.push(questionFormGroup);
   }
 
@@ -102,6 +112,41 @@ export class CourseEditorComponent implements OnInit {
     this.initialCourse?.sections?.sort((a, b) => a.order - b.order)
       .forEach(section => this.addSection(section));
     console.log(this.courseForm.value)
+  }
+
+  sectionDrop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.courseFormSections.controls, event.previousIndex, event.currentIndex);
+  }
+
+  getQuizQuestions(section: AbstractControl) {
+    return (section.get('typeForm.questions') as FormArray);
+  }
+
+  getQuizQuestionAnswers(question: AbstractControl) {
+    return (question.get('answers') as FormArray);
+  }
+
+  removeSection(sectionIndex: number) {
+    this.courseFormSections.controls.splice(sectionIndex, 1);
+    const newSelected = sectionIndex - 1;
+    this.selectedSectionIndex = newSelected >= 0 ? newSelected : 0;
+  }
+
+  duplicateSection(sectionIndex: number) {
+    let section = this.courseFormSections.controls[sectionIndex].value as any;
+    section = { ...section, ...section.typeForm };
+    delete section.typeForm;
+    delete section.id;
+    this.addSection(section, sectionIndex + 1);
+    this.selectedSectionIndex = sectionIndex + 1;
+  }
+
+  editorConfig: AngularEditorConfig = { 
+    editable: true,
+    sanitize: true,
+    toolbarHiddenButtons: [
+      ['fontName']
+    ]
   }
 }
 

@@ -16,6 +16,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from "@angular/material/list";
 import { CourseListComponent } from './course-list/course-list.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
 
 
 const materialDeps = [
@@ -31,7 +35,10 @@ const materialDeps = [
   MatTooltipModule,
   MatSidenavModule,
   MatMenuModule,
-  MatListModule
+  MatListModule,
+  MatSelectModule,
+  MatCheckboxModule,
+  MatRadioModule
 ]
 
 @NgModule({
@@ -41,6 +48,8 @@ const materialDeps = [
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
     FlexLayoutModule,
     ...materialDeps,
   ],
@@ -49,6 +58,8 @@ const materialDeps = [
     LoadingComponent,
     CourseListComponent,
     FlexLayoutModule,
+    ReactiveFormsModule,
+    FormsModule,
   ]
 })
 export class SharedModule { }
