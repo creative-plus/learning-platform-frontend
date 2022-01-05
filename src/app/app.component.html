@@ -30,6 +30,10 @@
           <mat-icon mat-list-icon>groups</mat-icon>
           <div mat-line>Projects</div>
         </a>
+        <a mat-list-item routerLink="trainer/trainees" routerLinkActive="active" class="nav-list-item">
+          <mat-icon mat-list-icon>person</mat-icon>
+          <div mat-line>Trainees</div>
+        </a>
       </mat-list>
     </mat-drawer>
     <div class="main-content" [@routeAnimations]="prepareRoute(outlet)">

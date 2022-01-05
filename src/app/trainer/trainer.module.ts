@@ -11,6 +11,8 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
 import { ProjectsComponent } from './pages/projects/projects.component';
 import { MatTableModule } from '@angular/material/table';
 import { ProjectEditorComponent } from './dialogs/project-editor/project-editor.component';
+import { TraineesComponent } from './pages/trainees/trainees.component';
+import { TraineeEditorComponent } from './dialogs/trainee-editor/trainee-editor.component';
 
 
 @NgModule({
@@ -18,7 +20,9 @@ import { ProjectEditorComponent } from './dialogs/project-editor/project-editor.
     CoursesComponent,
     CourseEditorComponent,
     ProjectsComponent,
-    ProjectEditorComponent
+    ProjectEditorComponent,
+    TraineesComponent,
+    TraineeEditorComponent
   ],
   imports: [
     CommonModule,
