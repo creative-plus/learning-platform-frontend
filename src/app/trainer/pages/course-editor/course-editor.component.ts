@@ -13,7 +13,7 @@ import { Learning } from 'src/app/lib/models/course/course-sections/Learning';
 import { Quiz } from 'src/app/lib/models/course/course-sections/quiz/Quiz';
 import { QuizQuestion } from 'src/app/lib/models/course/course-sections/quiz/QuizQuestion';
 import { QuizQuestionAnswer } from 'src/app/lib/models/course/course-sections/quiz/QuizQuestionAnswer';
-import { ArrayLenghtValidator } from 'src/app/lib/models/validators/ArrayLengthValidator';
+import { ArrayLenghtValidator } from 'src/app/lib/validators/ArrayLengthValidator';
 import { copyObject } from 'src/app/lib/util';
 import { CourseService } from 'src/app/services/course.service';
 
