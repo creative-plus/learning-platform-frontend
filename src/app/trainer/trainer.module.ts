@@ -8,12 +8,17 @@ import { CourseEditorComponent } from './pages/course-editor/course-editor.compo
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AngularEditorModule } from '@kolkov/angular-editor';
+import { ProjectsComponent } from './pages/projects/projects.component';
+import { MatTableModule } from '@angular/material/table';
+import { ProjectEditorComponent } from './dialogs/project-editor/project-editor.component';
 
 
 @NgModule({
   declarations: [
     CoursesComponent,
-    CourseEditorComponent
+    CourseEditorComponent,
+    ProjectsComponent,
+    ProjectEditorComponent
   ],
   imports: [
     CommonModule,
@@ -21,7 +26,8 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
     SharedModule,
     DragDropModule,
     MatSlideToggleModule,
-    AngularEditorModule
+    AngularEditorModule,
+    MatTableModule
   ]
 })
 export class TrainerModule { }

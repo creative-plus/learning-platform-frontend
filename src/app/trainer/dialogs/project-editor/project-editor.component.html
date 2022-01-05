@@ -1,0 +1,43 @@
+<div class="dialog-loading-shade" *ngIf="isLoadingQuery">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</div>
+
+<h2 mat-dialog-title *ngIf="data.mode == 'create'">Add project</h2>
+<h2 mat-dialog-title *ngIf="data.mode == 'edit'">Edit project</h2>
+<h2 mat-dialog-title *ngIf="data.mode == 'delete'">Delete project?</h2>
+
+<mat-dialog-content *ngIf="data.mode == 'edit' || data.mode == 'create'">
+  <form [formGroup]="projectForm" autocomplete="off" fxLayout="row grid">
+    <mat-form-field appearance="outline" fxFlex="100">
+      <mat-label>Project name</mat-label>
+      <input matInput type="text" formControlName="name" name="projectName">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" fxFlex="100">
+      <mat-label>Project description</mat-label>
+      <textarea matInput type="text" formControlName="description" name="projectDescription"></textarea>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" fxFlex="100">
+      <mat-label>Project start date</mat-label>
+      <input matInput type="date" formControlName="startDate" name="projectStartDate">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" fxFlex="100">
+      <mat-label>Project end date</mat-label>
+      <input matInput type="date" formControlName="endDate" name="projectEndDate">
+
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-content class="mat-typography" *ngIf="data.mode == 'delete'">
+  <p>Are you sure you want to delete this project?</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button (click)="saveProject()" *ngIf="data.mode == 'create'" [disabled]="projectForm.invalid">Add</button>
+  <button mat-button (click)="saveProject()" *ngIf="data.mode == 'edit'" [disabled]="projectForm.invalid">Save</button>
+  <button mat-button (click)="deleteProject()" *ngIf="data.mode == 'delete'">Delete</button>
+</mat-dialog-actions>

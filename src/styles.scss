@@ -59,3 +59,45 @@ mat-icon.muted {
 .separator {
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
+
+.table-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  
+  .loading-shade {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.15);
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .toolbar-spacer {
+      flex: 1 1 auto;
+  }
+
+  table {
+    width: 100%;
+
+    .mat-column-actions {
+      width: 80px;
+    }
+  }
+}
+
+.dialog-loading-shade {
+  position: absolute;
+  top: -24px;
+  left: -24px;
+  bottom: 0;
+  right: -24px;
+  background: rgba(0, 0, 0, 0.10);
+  z-index: 1;
+  display: flex;
+}
