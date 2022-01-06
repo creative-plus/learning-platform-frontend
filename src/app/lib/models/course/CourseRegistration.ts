@@ -3,7 +3,7 @@ import { CourseSection } from "./course-sections/CourseSection";
 export interface CourseRegistration {
   id: {
     courseId: number;
-    sectionId: number;
+    traineeId: number;
   },
   dateStarted: string;
   dateFinished: string;
