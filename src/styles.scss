@@ -102,7 +102,7 @@ mat-icon.muted {
   display: flex;
 }
 
-button:not([mat-icon-button], [mat-fab], [mat-mini-fab]) {
+button.with-icon {
   height: 40px;
   display: inline-flex;
   align-items: center;

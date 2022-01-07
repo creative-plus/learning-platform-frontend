@@ -30,11 +30,12 @@
       </div>
     </div>
     <div class="course-nav" fxLayout="row" fxLayoutAlign="end">
-      <button mat-raised-button color="primary" [disabled]="currentSection?.id == firstSection.id" (click)="goToPreviousSection()">
+      <button mat-raised-button color="primary" class="with-icon"
+        [disabled]="currentSection?.id == firstSection.id" (click)="goToPreviousSection()">
         <mat-icon>chevron_left</mat-icon>
         <span>Previous section</span>
       </button>
-      <button mat-raised-button color="primary" (click)="goToNextSection()">
+      <button mat-raised-button color="primary" class="with-icon" (click)="goToNextSection()">
         <span *ngIf="currentSection?.id == lastSection?.id">Finish course</span>
         <span *ngIf="currentSection?.id != lastSection?.id">Next section</span>
         <mat-icon>chevron_right</mat-icon>
