@@ -300,6 +300,10 @@ export class CourseEditorComponent implements OnInit {
       ['fontName']
     ]
   }
+
+  exit() {
+    this.router.navigate(["trainer", "courses"]);
+  }
 }
 
 interface FormValue {
