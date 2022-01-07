@@ -16,6 +16,7 @@ import { QuizQuestionAnswer } from 'src/app/lib/models/course/course-sections/qu
 import { ArrayLenghtValidator } from 'src/app/lib/validators/ArrayLengthValidator';
 import { copyObject } from 'src/app/lib/util';
 import { CourseService } from 'src/app/services/course.service';
+import { CourseViewMockService } from 'src/app/services/course-view-mock.service';
 
 @Component({
   selector: 'app-course-editor',
@@ -26,7 +27,7 @@ import { CourseService } from 'src/app/services/course.service';
 export class CourseEditorComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private courseService: CourseService, private router: Router,
-    private snackbar: MatSnackBar) { }
+    private snackbar: MatSnackBar, private courseViewMockService: CourseViewMockService) { }
 
   initialCourse!: Course | null;
   courseId!: number | null;
@@ -36,6 +37,10 @@ export class CourseEditorComponent implements OnInit {
   courseStates: FormValue[] = [];
   currentCourseStateIndex: number | null;
   courseValueChangesSubscription!: Subscription;
+  providingCourseView: boolean = false;
+  courseViewWindow: Window = null;
+  courseMockId: number | null = null;
+  
 
   courseForm = new FormGroup({
     name: new FormControl("", [Validators.required]),
@@ -183,6 +188,7 @@ export class CourseEditorComponent implements OnInit {
       )
       .subscribe(_ => {
         this.addFormState(courseForm);
+        this.putToMock();
       });
   }
 
@@ -192,8 +198,24 @@ export class CourseEditorComponent implements OnInit {
       this.courseStates.splice(this.currentCourseStateIndex + 1, deleteCount);
     }
     this.courseStates.push(courseForm.value);
-    console.log(courseForm.value)
     this.currentCourseStateIndex = null;
+  }
+
+  private putToMock() {
+    if(!this.providingCourseView) return 0;
+    const course = this.formValueToCourse(this.courseForm.value);
+    return this.courseViewMockService.putMockCourse(course, this.courseMockId);
+  }
+
+  viewCourse() {
+    this.providingCourseView = true;
+    this.courseMockId = this.putToMock();
+    const windowRef = this.courseViewWindow;
+    if(!windowRef || windowRef.closed || typeof windowRef.closed == "undefined") {
+      this.courseViewWindow = window.open(`/trainer/courses/${this.courseMockId}/view`);
+    } else {
+      windowRef.focus();
+    }
   }
 
   undoAction() {
@@ -223,7 +245,6 @@ export class CourseEditorComponent implements OnInit {
     event.stopPropagation();
     this.selectedSectionIndex = sectionIndex;
   }
-
 
   safeSetFormValue(value: FormValue) {
     const course = this.formValueToCourse(value);

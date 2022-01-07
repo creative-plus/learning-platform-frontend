@@ -1,0 +1,44 @@
+<mat-toolbar color="primary" class="app-toolbar">
+  <button mat-icon-button matTooltip="Toggle sections" (click)="drawer.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="toolbar-title">{{ course?.name }}</span>
+  <span class="toolbar-spacer"></span>
+  <button mat-icon-button matTooltip="Exit learning area" (click)="exit()">
+    <mat-icon>exit_to_app</mat-icon>
+  </button>
+</mat-toolbar>
+<mat-drawer-container class="drawer-container">
+  <mat-drawer #drawer [mode]="drawerMode" class="main-drawer">
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let section of courseSections" [ngClass]="{ selected: section.id == currentSection?.id }">
+        <mat-icon mat-list-icon *ngIf="section.passed">done</mat-icon>
+        <div mat-line>{{ section.title }}</div>
+      </a>
+    </mat-nav-list>
+  </mat-drawer>
+  <div class="main-content">
+    <div class="section-card mat-elevation-z2">
+      <app-loading type="bar" *ngIf="isLoadingContent"></app-loading>
+      <div class="mat-display-3 section-title">
+        <span *ngIf="currentSection.type == 'quiz'">Quiz: </span>
+        <span>{{ currentSection.title }}</span>
+      </div>
+      <div class="section-content" *ngIf="currentSection.type == 'learning'" [innerHTML]="contentSectionLearning.content"></div>
+      <div class="section-quiz" *ngIf="currentSection.type == 'quiz'">
+        ..
+      </div>
+    </div>
+    <div class="course-nav" fxLayout="row" fxLayoutAlign="end">
+      <button mat-raised-button color="primary" [disabled]="currentSection?.id == firstSection.id" (click)="goToPreviousSection()">
+        <mat-icon>chevron_left</mat-icon>
+        <span>Previous section</span>
+      </button>
+      <button mat-raised-button color="primary" (click)="goToNextSection()">
+        <span *ngIf="currentSection?.id == lastSection?.id">Finish course</span>
+        <span *ngIf="currentSection?.id != lastSection?.id">Next section</span>
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-drawer-container>

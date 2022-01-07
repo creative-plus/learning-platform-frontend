@@ -8,6 +8,9 @@
       <span *ngIf="!initialCourse">Add course</span>
     </div>
     <div class="toolbar-spacer"></div>
+    <button mat-icon-button matTooltip="View course" (click)="viewCourse()" [disabled]="courseForm.invalid">
+      <mat-icon>visibility</mat-icon>
+    </button>
     <button mat-icon-button matTooltip="Undo" (click)="undoAction()" [disabled]="!canUndo">
       <mat-icon>undo</mat-icon>
     </button>

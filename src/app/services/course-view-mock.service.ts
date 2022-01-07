@@ -45,10 +45,7 @@ export class CourseViewMockService extends AbstractCourseViewService {
 
   getCourse(courseId: number): Observable<Course> {
     return this.courseMockDb.asObservable().pipe(
-      map(db => { 
-        console.log(db)
-        return db[courseId]
-      })
+      map(db =>  db[courseId])
     );
   }
 
