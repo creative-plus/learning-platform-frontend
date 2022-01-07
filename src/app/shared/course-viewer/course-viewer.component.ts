@@ -101,6 +101,7 @@ export class CourseViewerComponent implements OnInit {
   }
 
   goToSection(sectionId: number) {
+    if(this.currentSection.id == sectionId) return;
     this.isLoadingContent = true;
     this.usedService.getSection(this.courseId, sectionId).subscribe(section => {
       if(section) {

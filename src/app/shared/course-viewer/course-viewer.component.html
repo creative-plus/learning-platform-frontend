@@ -11,7 +11,12 @@
 <mat-drawer-container class="drawer-container">
   <mat-drawer #drawer [mode]="drawerMode" class="main-drawer">
     <mat-nav-list>
-      <a mat-list-item *ngFor="let section of courseSections" [ngClass]="{ selected: section.id == currentSection?.id }">
+      <a mat-list-item 
+        *ngFor="let section of courseSections; let index = index" 
+        [ngClass]="{ selected: section.id == currentSection?.id }"
+        [disabled]="index > 0 && !courseSections[index - 1].passed"
+        (click)="goToSection(section.id)"
+        >
         <mat-icon mat-list-icon *ngIf="section.passed">done</mat-icon>
         <div mat-line>{{ section.title }}</div>
       </a>
