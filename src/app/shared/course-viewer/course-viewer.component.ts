@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDrawerMode } from '@angular/material/sidenav';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,6 +13,8 @@ import { QuizAnswers } from 'src/app/lib/models/course/course-sections/quiz/quiz
 import { CourseRegistration } from 'src/app/lib/models/course/CourseRegistration';
 import { arrayToMap } from 'src/app/lib/util';
 import { CourseViewMockService } from 'src/app/services/course-view-mock.service';
+
+const SideWidth = 800;
 
 @Component({
   selector: 'app-course-viewer',
@@ -187,6 +189,11 @@ export class CourseViewerComponent implements OnInit {
     } else {
       this.router.navigate(["/trainee", "courses"]);
     }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.drawerMode = event.target.innerWidth < SideWidth ? "over" : "side";
   }
 }
 
