@@ -25,8 +25,35 @@
         <span>{{ currentSection.title }}</span>
       </div>
       <div class="section-content" *ngIf="currentSection.type == 'learning'" [innerHTML]="contentSectionLearning.content"></div>
-      <div class="section-quiz" *ngIf="currentSection.type == 'quiz'">
-        ..
+      <div class="section-quiz" *ngIf="currentSection.type == 'quiz'" [formGroup]="quizAnswersForm">
+        <div class="tip-card severe" *ngIf="quizHasWrongAnswers">
+          <mat-icon>error</mat-icon>
+          <span class="text">Seems like you got some answers wrong. Please correct the quiz.</span>
+        </div>
+        <div class="quiz-question" *ngFor="let question of contentSectionQuiz.questions; let i = index" formArrayName="answers">
+          <h1 class="question-title">
+            <span>{{ i + 1 }}. {{ question.text }}</span>
+            <mat-icon 
+              *ngIf="correctQuestionAnswers[question.id] != null" 
+              [ngClass]="{ success: correctQuestionAnswers[question.id], severe: !correctQuestionAnswers[question.id] }">
+              {{ correctQuestionAnswers[question.id] ? 'done' : 'close' }}
+            </mat-icon>
+          </h1>
+          <div class="question-answers" *ngIf="!question.multipleAnswer" [formGroupName]="i">
+            <mat-radio-group formControlName="answerId">
+              <mat-radio-button class="question-answer" *ngFor="let answer of question.answers" [value]="answer.id">
+                {{ answer.text }}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="question-answers" *ngIf="question.multipleAnswer" [formGroupName]="i">
+            <mat-selection-list multiple formControlName="answerIds">
+              <mat-list-option checkboxPosition="before"  *ngFor="let answer of question.answers" [value]="answer.id">
+                {{ answer.text }}
+              </mat-list-option>
+            </mat-selection-list>
+          </div>
+        </div>
       </div>
     </div>
     <div class="course-nav" fxLayout="row" fxLayoutAlign="end">
@@ -35,7 +62,7 @@
         <mat-icon>chevron_left</mat-icon>
         <span>Previous section</span>
       </button>
-      <button mat-raised-button color="primary" class="with-icon" (click)="goToNextSection()">
+      <button mat-raised-button color="primary" class="with-icon" (click)="goToNextSection()" [disabled]="!canPassSection">
         <span *ngIf="currentSection?.id == lastSection?.id">Finish course</span>
         <span *ngIf="currentSection?.id != lastSection?.id">Next section</span>
         <mat-icon>chevron_right</mat-icon>

@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDrawerMode } from '@angular/material/sidenav';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, merge } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
-import { AbstractCourseViewService } from 'src/app/lib/abstract/AbstractCourseViewService';
+import { combineLatest } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { AbstractCourseViewService, ICorrectQuestionAnswers, QuizWrongAnswerResponse } from 'src/app/lib/abstract/AbstractCourseViewService';
 import { Course } from 'src/app/lib/models/course/Course';
 import { CourseSection } from 'src/app/lib/models/course/course-sections/CourseSection';
 import { Learning } from 'src/app/lib/models/course/course-sections/Learning';
 import { Quiz } from 'src/app/lib/models/course/course-sections/quiz/Quiz';
+import { QuizAnswers } from 'src/app/lib/models/course/course-sections/quiz/quiz-answers/QuizAnswers';
 import { CourseRegistration } from 'src/app/lib/models/course/CourseRegistration';
 import { arrayToMap } from 'src/app/lib/util';
 import { CourseViewMockService } from 'src/app/services/course-view-mock.service';
@@ -32,6 +34,11 @@ export class CourseViewerComponent implements OnInit {
 
   drawerMode: MatDrawerMode = "side";
 
+  quizAnswersForm = new FormGroup({
+    answers: new FormArray([])
+  });
+
+  correctQuestionAnswers: ICorrectQuestionAnswers = { };
 
   ngOnInit(): void {
     this.usedService = this.mockService;
@@ -58,10 +65,23 @@ export class CourseViewerComponent implements OnInit {
     })
   }
 
+  private serializeAnswers() {
+    const formValue = this.quizAnswersForm.value as QuizAnswersFormValue;
+    formValue.answers.map(questionAnswer => {
+      if(questionAnswer.answerId) {
+        questionAnswer.answerIds = [questionAnswer.answerId];
+        delete questionAnswer.answerId;
+      }
+      return questionAnswer;
+    });
+    return formValue as QuizAnswers;
+  }
+
   goToNextSection() {
     this.isLoadingContent = true;
-    this.usedService.passSection(this.courseId, this.currentSection.id).subscribe(result => {
-      if(result) {
+    const quizAnswers = this.currentSection.type == "quiz" ? this.serializeAnswers() : null;
+    this.usedService.passSection(this.courseId, this.currentSection.id, quizAnswers).subscribe(result => {
+      if((result as any).id) {
         this.courseRegistration = result as CourseRegistration;
         const nextSection = this.courseSections.find(section => section.order == this.currentSection.order + 1);
         if(nextSection) {
@@ -69,6 +89,7 @@ export class CourseViewerComponent implements OnInit {
         }
       } else {
         this.isLoadingContent = false;
+        this.correctQuestionAnswers = (result as QuizWrongAnswerResponse).correctQuestionAnswers;
       }
     });
   }
@@ -82,9 +103,33 @@ export class CourseViewerComponent implements OnInit {
     this.usedService.getSection(this.courseId, sectionId).subscribe(section => {
       if(section) {
         this.currentSection = section;
+        if(section.type == 'quiz') {
+          this.prepareQuizFormArray();
+        }
+        this.correctQuestionAnswers = {};
       }
       this.isLoadingContent = false;
     });
+  }
+
+  prepareQuizFormArray() {
+    const formArray = new FormArray([]);
+    this.contentSectionQuiz.questions.forEach(question => {
+      const questionForm = new FormGroup({
+        questionId: new FormControl(question.id, [Validators.required]),
+      });
+      if(question.multipleAnswer) {
+        questionForm.addControl("answerIds", new FormControl([], [Validators.required]));
+      } else {
+        questionForm.addControl("answerId", new FormControl(null, [Validators.required]));
+      }
+      formArray.push(questionForm);
+    });
+    this.quizAnswersForm.setControl("answers", formArray);
+  }
+
+  get quizAnswersFormArray() {
+    return this.quizAnswersForm.get("answers") as FormArray;
   }
 
   get courseSections(): CourseSectionEnritched[] {
@@ -120,6 +165,14 @@ export class CourseViewerComponent implements OnInit {
     return this.courseSections?.find(section => section.order == this.currentSection.order + 1);
   }
 
+  get canPassSection() {
+    return this.currentSection.type == "learning" || this.quizAnswersForm.valid;
+  }
+
+  get quizHasWrongAnswers() {
+    return Object.keys(this.correctQuestionAnswers).length > 0;
+  }
+
   get contentSectionLearning() {
     return this.currentSection as Learning;
   }
@@ -137,6 +190,14 @@ export class CourseViewerComponent implements OnInit {
   }
 }
 
-export interface CourseSectionEnritched extends CourseSection {
+interface CourseSectionEnritched extends CourseSection {
   passed: boolean;
+}
+
+interface QuizAnswersFormValue {
+  answers: {
+    questionId: number;
+    answerId: number;
+    answerIds: number[];
+  }[];
 }

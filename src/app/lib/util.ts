@@ -7,3 +7,7 @@ export function arrayToMap<Type = Object>(arr: Type[], key: string): { [key: str
   arr.forEach(item => map[item[key]] = item);
   return map;
 }
+
+export function randomInt(upperBound: number) {
+  return Math.floor(Math.random() * upperBound);
+}

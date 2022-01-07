@@ -121,3 +121,28 @@ button.with-icon {
     }
   }
 }
+
+.tip-card {
+  display: flex;
+  align-items: center;
+  background: #90a4ae;
+  padding: 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+
+  mat-icon {
+    color: #263238;
+    margin-right: 8px;
+  }
+  
+  .text {
+    flex: 1;
+  }
+
+  &.severe {
+    background: #f44336;
+    mat-icon {
+      color: #212121;
+    }
+  }
+}

@@ -16,7 +16,9 @@ export abstract class AbstractCourseViewService {
 }
 
 export interface QuizWrongAnswerResponse {
-  correctQuestionAnswers: {
-    [questionId: number]: boolean;
-  }
+  correctQuestionAnswers: ICorrectQuestionAnswers;
+}
+
+export interface ICorrectQuestionAnswers {
+  [questionId: number]: boolean;
 }

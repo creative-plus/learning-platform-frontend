@@ -36,6 +36,37 @@
     font-weight: 300;
     margin-bottom: 24px;
   }
+
+  .section-quiz {
+    .question-title {
+      mat-icon {
+        font-size: 20px;
+        line-height: 20px;
+        margin-left: 8px;
+        vertical-align: middle;
+        height: 20px;
+        width: 20px;
+        &.success {
+          color: #2e7d32;
+        }
+        &.severe {
+          color: #d32f2f;
+        }
+      }
+    }
+    .question-answers {
+      margin-bottom: 32px;
+      .question-answer {
+        display: block;
+        margin-bottom: 16px;
+        margin-left: 16px;
+      }
+
+      mat-selection-list {
+        padding: 0;
+      }
+    }
+  }
   
 }
 

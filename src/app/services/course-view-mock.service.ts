@@ -7,6 +7,7 @@ import { CourseSection } from '../lib/models/course/course-sections/CourseSectio
 import { Quiz } from '../lib/models/course/course-sections/quiz/Quiz';
 import { QuizAnswers } from '../lib/models/course/course-sections/quiz/quiz-answers/QuizAnswers';
 import { CourseRegistration } from '../lib/models/course/CourseRegistration';
+import { copyObject, randomInt } from '../lib/util';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,19 @@ export class CourseViewMockService extends AbstractCourseViewService {
     const db = this.courseMockDb.value;
     const id = mockId || course.id || Date.now(); // current time is enough as ID
     course.id = id;
-    db[id] = course;
+    const setCourse = copyObject(course);
+    setCourse?.sections?.forEach(section => {
+      if(section.type == 'quiz') {
+        (section as Quiz).questions.forEach(question => {
+          question.id = randomInt(100000000);
+          question.answers.forEach(answer => {
+            answer.id = randomInt(100000000);
+          });
+        });
+      }
+    });
+    db[id] = setCourse;
+
     this.courseMockDb.next(db);
     this.justUpdatedDb = true;
     localStorage.setItem("mockCourses", JSON.stringify(db));
@@ -45,7 +58,7 @@ export class CourseViewMockService extends AbstractCourseViewService {
 
   getCourse(courseId: number): Observable<Course> {
     return this.courseMockDb.asObservable().pipe(
-      map(db =>  db[courseId])
+      map(db => db[courseId])
     );
   }
 
@@ -78,6 +91,8 @@ export class CourseViewMockService extends AbstractCourseViewService {
   }
 
   private _getCourseRegistration(courseId: number) {
+    const course = this._getCourse(courseId)
+    if(!course) return null;
     return {
       id: {
         traineeId: null,
@@ -85,7 +100,7 @@ export class CourseViewMockService extends AbstractCourseViewService {
       },
       dateStarted: new Date().toISOString(),
       dateFinished: null,
-      sections: this._getCourse(courseId).sections
+      sections: course.sections
     };
   }
 
