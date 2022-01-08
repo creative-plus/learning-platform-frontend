@@ -1,10 +1,10 @@
 <mat-menu #courseMenu="matMenu" xPosition="before">
-  <ng-template matMenuContent let-id="id">
-    <button mat-menu-item (click)="editCourse(id)">
+  <ng-template matMenuContent let-index="index">
+    <button mat-menu-item (click)="editCourse(index)">
       <mat-icon>mode</mat-icon>
       <span>Edit course</span>
     </button>
-    <button mat-menu-item (click)="deleteCourse(id)">
+    <button mat-menu-item (click)="deleteCourse(index)">
       <mat-icon>delete</mat-icon>
       <span>Delete course</span>
     </button>
@@ -12,7 +12,7 @@
 </mat-menu>
 
 <div class="course-grid" fxLayout="row grid" fxLayoutGap="16px grid">
-  <div class="course-grid-inner" fxFlex="50" *ngFor="let course of courses">
+  <div class="course-grid-inner" fxFlex="50" *ngFor="let course of courses; let i = index">
     <div class="course-card mat-elevation-z2">
       <div class="course-cover-container">
         <img src *ngIf="false" />
@@ -20,13 +20,24 @@
           <mat-progress-bar [value]="course.registration.sections.length / (course.sectionNumber || 1) * 100">
           </mat-progress-bar>
         </div>
-        <div class="fab-container">
+        <div class="fab-container" *ngIf="course.loading">
+          <button mat-fab>
+            <mat-spinner class="white" diameter="24"></mat-spinner>
+          </button>
+        </div>
+        <div class="fab-container" *ngIf="!course.loading">
           <button mat-fab *ngIf="perspective == 'trainer'" matTooltip="See leaderboard">
             <mat-icon>leaderboard</mat-icon>
           </button>
+          <button mat-fab *ngIf="perspective == 'trainee' && !course.registration" matTooltip="Enroll to course" (click)="enrollToCourse(i)">
+            <mat-icon>start</mat-icon>
+          </button>
+          <button mat-fab *ngIf="perspective == 'trainee' && course.registration" matTooltip="Resume course" (click)="resumeCourse(i)">
+            <mat-icon>play_arrow</mat-icon>
+          </button>
         </div>
         <div class="action-container" *ngIf="perspective == 'trainer'">
-          <button mat-icon-button [matMenuTriggerFor]="courseMenu" [matMenuTriggerData]="{ id: course.id }" matTooltip="More...">
+          <button mat-icon-button [matMenuTriggerFor]="courseMenu" [matMenuTriggerData]="{ index: i }" matTooltip="More...">
             <mat-icon>more_vert</mat-icon>
           </button>
         </div>

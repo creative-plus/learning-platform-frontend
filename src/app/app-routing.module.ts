@@ -16,6 +16,11 @@ const routes: Routes = [
     canActivate: [SignedInGuard, RoleGuard],
     data: { role: 'trainer' }
   },
+  { path: 'trainee',
+    loadChildren: () => import('./trainee/trainee.module').then(m => m.TraineeModule),
+    canActivate: [SignedInGuard, RoleGuard],
+    data: { role: 'trainee' }
+  },
   { path: '**', redirectTo: '', canActivate: [SignedInGuard, RoleGuard] },
 ];
 

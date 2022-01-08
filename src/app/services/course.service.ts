@@ -5,6 +5,7 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Course } from '../lib/models/course/Course';
+import { CourseRegistration } from '../lib/models/course/CourseRegistration';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -16,6 +17,11 @@ export class CourseService {
 
   getAllCourses(): Observable<Course[]> {
     const url = `${environment.apiUrl}/courses`;
+    return this.http.get<Course[]>(url, this.auth.getPrivateHeaders());
+  }
+
+  getAllCoursesWithRegistration(): Observable<Course[]> {
+    const url = `${environment.apiUrl}/courses/with-enrollment`;
     return this.http.get<Course[]>(url, this.auth.getPrivateHeaders());
   }
 
@@ -37,6 +43,13 @@ export class CourseService {
     const url = `${environment.apiUrl}/courses/${id}`;
     return this.http.put<Course>(url, course, this.auth.getPrivateHeaders()).pipe(
       catchError(this.handleError<Course>('editCourse', null))
+    );
+  }
+
+  enrollToCourse(id: number): Observable<CourseRegistration> {
+    const url = `${environment.apiUrl}/courses/${id}/enrollment`;
+    return this.http.post<CourseRegistration>(url, {}, this.auth.getPrivateHeaders()).pipe(
+      catchError(this.handleError<CourseRegistration>('enrollToCourse', null))
     );
   }
 

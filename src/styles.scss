@@ -151,3 +151,7 @@ button.with-icon {
   background: transparent;
   color: #616161 !important;
 }
+
+.mat-progress-spinner.white circle, .mat-spinner.white circle {
+  stroke: #fff;
+}
