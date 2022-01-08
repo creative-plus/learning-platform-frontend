@@ -2,8 +2,8 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDrawerMode } from '@angular/material/sidenav';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { combineLatest, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AbstractCourseViewService, ICorrectQuestionAnswers, QuizWrongAnswerResponse } from 'src/app/lib/abstract/AbstractCourseViewService';
 import { Course } from 'src/app/lib/models/course/Course';
 import { CourseSection } from 'src/app/lib/models/course/course-sections/CourseSection';
@@ -13,6 +13,7 @@ import { QuizAnswers } from 'src/app/lib/models/course/course-sections/quiz/quiz
 import { CourseRegistration } from 'src/app/lib/models/course/CourseRegistration';
 import { arrayToMap } from 'src/app/lib/util';
 import { CourseViewMockService } from 'src/app/services/course-view-mock.service';
+import { CourseViewService } from 'src/app/services/course-view.service';
 
 const SideWidth = 800;
 
@@ -24,7 +25,7 @@ const SideWidth = 800;
 export class CourseViewerComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private router: Router,
-    private mockService: CourseViewMockService) { }
+    private mockService: CourseViewMockService, private realService: CourseViewService) { }
 
   usedService!: AbstractCourseViewService;
   courseId!: number;
@@ -36,16 +37,16 @@ export class CourseViewerComponent implements OnInit {
 
   drawerMode: MatDrawerMode = "side";
 
-  quizAnswersForm = new FormGroup({
-    answers: new FormArray([])
-  });
+  quizAnswersForm: FormGroup = null;
 
   correctQuestionAnswers: ICorrectQuestionAnswers = { };
 
   ngOnInit(): void {
-    this.usedService = this.mockService;
-    this.route.paramMap
-    .pipe(
+    this.route.data.pipe(
+      switchMap(data => {
+        this.usedService = data.useMockService ? this.mockService : this.realService;
+        return this.route.paramMap;
+      }),
       switchMap(params => {
         this.courseId = Number(params.get("id"));
         if(!this.courseId) {
@@ -62,8 +63,13 @@ export class CourseViewerComponent implements OnInit {
         this.courseRegistration = registration;
         return this.usedService.getSection(this.courseId, this.firstUnpassedSection.id);
       }),
+      catchError(_ => of(null))
     ).subscribe(section => {
-      this.currentSection = section;
+      if(!section) {
+        this.router.navigate(["/"]);
+      } else {
+        this.processSection(section);
+      }
     })
   }
 
@@ -82,7 +88,16 @@ export class CourseViewerComponent implements OnInit {
   goToNextSection() {
     this.isLoadingContent = true;
     const quizAnswers = this.currentSection.type == "quiz" ? this.serializeAnswers() : null;
+    const isPassed = this.courseSections.find(section => this.currentSection.id == section.id)?.passed;
+    if(isPassed) {
+      this.goToSection(this.nextSection?.id);
+      return;
+    }
     this.usedService.passSection(this.courseId, this.currentSection.id, quizAnswers).subscribe(result => {
+      if(!result) {
+        this.isLoadingContent = false;
+        return;
+      }
       if((result as any).id) {
         this.courseRegistration = result as CourseRegistration;
         const nextSection = this.courseSections.find(section => section.order == this.currentSection.order + 1);
@@ -101,18 +116,23 @@ export class CourseViewerComponent implements OnInit {
   }
 
   goToSection(sectionId: number) {
-    if(this.currentSection.id == sectionId) return;
+    if(!sectionId || this.currentSection.id == sectionId) return;
     this.isLoadingContent = true;
     this.usedService.getSection(this.courseId, sectionId).subscribe(section => {
       if(section) {
-        this.currentSection = section;
-        if(section.type == 'quiz') {
-          this.prepareQuizFormArray();
-        }
-        this.correctQuestionAnswers = {};
+        this.processSection(section);
       }
       this.isLoadingContent = false;
     });
+  }
+
+  private processSection(section: CourseSection) {
+    this.quizAnswersForm = null;
+    this.correctQuestionAnswers = {};
+    this.currentSection = section;
+    if(section.type == 'quiz') {
+      this.prepareQuizFormArray();
+    }
   }
 
   prepareQuizFormArray() {
@@ -128,7 +148,9 @@ export class CourseViewerComponent implements OnInit {
       }
       formArray.push(questionForm);
     });
-    this.quizAnswersForm.setControl("answers", formArray);
+    this.quizAnswersForm = new FormGroup({
+      answers: formArray
+    });
   }
 
   get quizAnswersFormArray() {
@@ -136,8 +158,9 @@ export class CourseViewerComponent implements OnInit {
   }
 
   get courseSections(): CourseSectionEnritched[] {
+    if(!this.course || !this.course.sections) return [];
     const sectionMap = arrayToMap<CourseSectionEnritched>(this.course.sections as CourseSectionEnritched[], "id");
-    this.courseRegistration.sections.forEach(section => {
+    this.courseRegistration?.sections.forEach(section => {
       sectionMap[section.id].passed = true;
     });
     return Object.values(sectionMap);
@@ -169,7 +192,7 @@ export class CourseViewerComponent implements OnInit {
   }
 
   get canPassSection() {
-    return this.currentSection.type == "learning" || this.quizAnswersForm.valid;
+    return this.currentSection?.type == "learning" || this.quizAnswersForm?.valid;
   }
 
   get quizHasWrongAnswers() {

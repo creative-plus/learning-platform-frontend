@@ -26,7 +26,7 @@ const routes: Routes = [
   {
     path: 'courses/:id/view',
     component: CourseViewerComponent,
-    data: { hideToolbar: true, hideDrawer: true }
+    data: { useMockService: true, hideToolbar: true, hideDrawer: true }
   },
   {
     path: 'projects',

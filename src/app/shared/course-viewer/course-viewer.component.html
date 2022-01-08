@@ -23,14 +23,14 @@
     </mat-nav-list>
   </mat-drawer>
   <div class="main-content">
-    <div class="section-card mat-elevation-z2">
+    <div class="section-card mat-elevation-z2" *ngIf="currentSection">
       <app-loading type="bar" *ngIf="isLoadingContent"></app-loading>
       <div class="mat-display-3 section-title">
         <span *ngIf="currentSection.type == 'quiz'">Quiz: </span>
         <span>{{ currentSection.title }}</span>
       </div>
       <div class="section-content" *ngIf="currentSection.type == 'learning'" [innerHTML]="contentSectionLearning.content"></div>
-      <div class="section-quiz" *ngIf="currentSection.type == 'quiz'" [formGroup]="quizAnswersForm">
+      <div class="section-quiz" *ngIf="quizAnswersForm && currentSection.type == 'quiz'" [formGroup]="quizAnswersForm">
         <div class="tip-card severe" *ngIf="quizHasWrongAnswers">
           <mat-icon>error</mat-icon>
           <span class="text">Seems like you got some answers wrong. Please correct the quiz.</span>
@@ -63,7 +63,7 @@
     </div>
     <div class="course-nav" fxLayout="row" fxLayoutAlign="end">
       <button mat-raised-button color="primary" class="with-icon"
-        [disabled]="currentSection?.id == firstSection.id" (click)="goToPreviousSection()">
+        [disabled]="currentSection?.id == firstSection?.id" (click)="goToPreviousSection()">
         <mat-icon>chevron_left</mat-icon>
         <span>Previous section</span>
       </button>
