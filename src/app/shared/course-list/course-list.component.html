@@ -26,7 +26,7 @@
           </button>
         </div>
         <div class="fab-container" *ngIf="!course.loading">
-          <button mat-fab *ngIf="perspective == 'trainer'" matTooltip="See leaderboard">
+          <button mat-fab *ngIf="perspective == 'trainer'" matTooltip="See leaderboard" (click)="seeLeaderboard(i)">
             <mat-icon>leaderboard</mat-icon>
           </button>
           <button mat-fab *ngIf="perspective == 'trainee' && !course.registration" matTooltip="Enroll to course" (click)="enrollToCourse(i)">

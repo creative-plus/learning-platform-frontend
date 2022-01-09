@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
 import { LeaderboardTrainee } from 'src/app/lib/models/LeaderboardTrainee';
@@ -14,7 +15,7 @@ import { ProjectService } from 'src/app/services/project.service';
 })
 export class LeaderboardComponent implements OnInit {
 
-  constructor(private leaderboardService: LeaderboardService, 
+  constructor(private route: ActivatedRoute, private leaderboardService: LeaderboardService, 
     private projectService: ProjectService, private courseService: CourseService) { }
 
   leaderboardSubscription!: Subscription;
@@ -33,6 +34,10 @@ export class LeaderboardComponent implements OnInit {
   courses = this.courseService.getAllCourses();
 
   ngOnInit(): void {
+    const courseId = this.route.snapshot.queryParams["courseId"] || null;
+    if(courseId) {
+      this.leaderboardOptionsForm.get("courseId").setValue(+courseId);
+    }
     this.leaderboardSubscription = this.leaderboardOptionsForm.valueChanges.pipe(
       startWith({}),
       switchMap(() => {

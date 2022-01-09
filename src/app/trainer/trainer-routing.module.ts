@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CourseViewerComponent } from '../shared/course-viewer/course-viewer.component';
+import { LeaderboardComponent } from '../shared/leaderboard/leaderboard.component';
 import { CourseEditorComponent } from './pages/course-editor/course-editor.component';
 import { CoursesComponent } from './pages/courses/courses.component';
 import { ProjectsComponent } from './pages/projects/projects.component';
@@ -35,6 +36,11 @@ const routes: Routes = [
   {
     path: 'trainees',
     component: TraineesComponent,
+  },
+  {
+    path: 'leaderboard',
+    component: LeaderboardComponent,
+    data: { title: "Leaderboard" }
   },
 ];
 

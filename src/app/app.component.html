@@ -22,17 +22,24 @@
   <mat-drawer-container class="drawer-container">
     <mat-drawer #drawer [mode]="drawerMode" class="main-drawer">
       <mat-list *ngIf="user?.type == 'trainer'" class="nav-list">
+        <div mat-subheader>Courses</div>
         <a mat-list-item routerLink="trainer/courses" routerLinkActive="active" class="nav-list-item">
           <mat-icon mat-list-icon>school</mat-icon>
           <div mat-line>Courses</div>
         </a>
+        <div mat-subheader>Projects</div>
         <a mat-list-item routerLink="trainer/projects" routerLinkActive="active" class="nav-list-item">
           <mat-icon mat-list-icon>groups</mat-icon>
           <div mat-line>Projects</div>
         </a>
+        <div mat-subheader>Trainees</div>
         <a mat-list-item routerLink="trainer/trainees" routerLinkActive="active" class="nav-list-item">
           <mat-icon mat-list-icon>person</mat-icon>
           <div mat-line>Trainees</div>
+        </a>
+        <a mat-list-item routerLink="trainer/leaderboard" routerLinkActive="active" class="nav-list-item">
+          <mat-icon mat-list-icon>leaderboard</mat-icon>
+          <div mat-line>Leaderboard</div>
         </a>
       </mat-list>
     </mat-drawer>

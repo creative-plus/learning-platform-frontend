@@ -31,6 +31,13 @@ export class CourseListComponent implements OnInit {
 
   }
 
+  seeLeaderboard(courseIndex: number) {
+    const course = this.courses[courseIndex];
+    this.router.navigate(["trainer", "leaderboard"], {
+      queryParams: { courseId: course.id }
+    });
+  }
+
   enrollToCourse(courseIndex: number) {
     const course = this.courses[courseIndex];
     course.loading = true;
