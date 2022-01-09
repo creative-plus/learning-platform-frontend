@@ -1,0 +1,52 @@
+<form class="leaderboard-options" [formGroup]="leaderboardOptionsForm" fxLayout="row" fxLayoutGap="10px grid">
+  <mat-form-field appearance="outline" fxFlex="50">
+    <mat-label>Project</mat-label>
+    <mat-select formControlName="projectId" name="leaderboardProject">
+      <mat-option [value]="null">--</mat-option>
+      <mat-option *ngFor="let project of projects | async" [value]="project.id">
+        {{ project.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" fxFlex="50">
+    <mat-label>Course</mat-label>
+    <mat-select formControlName="courseId" name="leaderboardCourse">
+      <mat-option [value]="null">--</mat-option>
+      <mat-option *ngFor="let course of courses | async" [value]="course.id">
+        {{ course.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>
+
+<div class="leaderboard-container">
+  <app-loading mode="bar" *ngIf="isLoadingResults"></app-loading>
+  <table mat-table [dataSource]="leaderboard" class="mat-elevation-z2">
+    <ng-container matColumnDef="index">
+      <th mat-header-cell *matHeaderCellDef> # </th>
+      <td mat-cell *matCellDef="let item; let i = index"> {{ i + 1 }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let item"> {{item.trainee?.firstName}} {{item.trainee?.lastName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="points">
+      <th mat-header-cell *matHeaderCellDef> Points </th>
+      <td mat-cell *matCellDef="let item">
+        <div class="points">
+          <span class="point blue" matTooltip="Points on correct quiz answers">{{ item.answerPoints }}</span>
+          <span class="point red" matTooltip="Points on passed course sections">{{ item.sectionPoints }}</span>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="3">No leaderboard data available.</td>
+    </tr>
+  </table>
+</div>

@@ -22,6 +22,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CourseViewerComponent } from './course-viewer/course-viewer.component';
+import { LeaderboardComponent } from './leaderboard/leaderboard.component';
+import { MatTableModule } from '@angular/material/table';
 
 
 const materialDeps = [
@@ -41,14 +43,16 @@ const materialDeps = [
   MatSelectModule,
   MatCheckboxModule,
   MatRadioModule,
-  MatDialogModule
+  MatDialogModule,
+  MatTableModule,
 ]
 
 @NgModule({
   declarations: [
     LoadingComponent,
     CourseListComponent,
-    CourseViewerComponent
+    CourseViewerComponent,
+    LeaderboardComponent
   ],
   imports: [
     CommonModule,
@@ -64,7 +68,8 @@ const materialDeps = [
     FlexLayoutModule,
     ReactiveFormsModule,
     FormsModule,
-    CourseViewerComponent
+    CourseViewerComponent,
+    LeaderboardComponent,
   ]
 })
 export class SharedModule { }
