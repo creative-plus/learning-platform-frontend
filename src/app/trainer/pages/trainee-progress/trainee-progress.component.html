@@ -1,1 +1,16 @@
+<form [formGroup]="progressForm"class="filter-form">
+  <mat-form-field appearance="outline">
+    <mat-label>Trainee</mat-label>
+    <mat-select formControlName="traineeId" name="traineeName">
+      <mat-option *ngFor="let trainee of trainees" [value]="trainee.id">
+        {{ trainee.firstName }} {{ trainee.lastName }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>
+
+<div class="no-results mat-elevation-z1" *ngIf="courseProgresses.length == 0">
+  <h1>This trainee has no course progress.</h1>
+</div>
+
 <app-course-progress *ngFor="let progress of courseProgresses" [courseProgress]="progress"></app-course-progress>

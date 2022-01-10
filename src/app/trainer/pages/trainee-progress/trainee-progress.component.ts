@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { startWith, switchMap } from 'rxjs/operators';
 import { CourseProgress } from 'src/app/lib/models/CourseProgress';
 import { Trainee } from 'src/app/lib/models/user/Trainee';
 import { TraineeService } from 'src/app/services/trainee.service';
@@ -18,15 +19,25 @@ export class TraineeProgressComponent implements OnInit, OnDestroy {
 
   trainees: Trainee[] = [];
   courseProgresses: CourseProgress[] = [];
+  selectedTrainee: Trainee;
+
+  progressForm = new FormGroup({
+    traineeId: new FormControl(null, [Validators.required])
+  });
 
   ngOnInit(): void {
-    this.progressSubscription = this.traineeService.getTrainees().pipe(
-      switchMap(trainees => {
-        this.trainees = trainees;
-        return this.traineeService.getProgress(trainees[0].id);
-      })
-    ).subscribe(result => {
-      this.courseProgresses = result;
+    this.traineeService.getTrainees().subscribe(trainees => {
+      this.trainees = trainees;
+      this.progressForm.get("traineeId").setValue(trainees[0].id);
+      this.progressSubscription = this.progressForm.valueChanges.pipe(
+        startWith({}),
+        switchMap(_ => {
+          const traineeId = this.progressForm.get("traineeId").value;
+          return this.traineeService.getProgress(traineeId);
+        })
+      ).subscribe(result => {
+        this.courseProgresses = result;
+      });
     });
   }
 
