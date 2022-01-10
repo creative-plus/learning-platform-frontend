@@ -1,0 +1,61 @@
+.course-progress-card {
+  max-width: 600px;
+  margin: 0 auto;
+  margin-top: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+
+  .course-header {
+    .course-cover {
+      height: 160px;
+      background: gray;
+      margin-bottom: 12px;
+    }
+
+    .header-text {
+      padding: 0 16px;
+      h2 {
+        margin-bottom: 6px;
+      }
+
+      .course-description {
+        line-height: 16px;
+        height: 32px;
+        display: -webkit-box;
+        color: rgba(0, 0, 0, 0.7);
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    }
+  }
+
+  .progress-summary {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+
+    .summary-section {
+      flex: 1;
+      text-align: center;
+      padding: 0px 8px;
+      &:not(:last-child) {
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .value {
+        font-size: 18px;
+        line-height: 26px;
+      }
+
+      .explanation {
+        color: rgba(0, 0, 0, 0.6);
+      }
+    }
+  }
+
+  .progress-list {
+    margin: 0 -16px;
+  }
+}

@@ -5,6 +5,7 @@ import { LeaderboardComponent } from '../shared/leaderboard/leaderboard.componen
 import { CourseEditorComponent } from './pages/course-editor/course-editor.component';
 import { CoursesComponent } from './pages/courses/courses.component';
 import { ProjectsComponent } from './pages/projects/projects.component';
+import { TraineeProgressComponent } from './pages/trainee-progress/trainee-progress.component';
 import { TraineesComponent } from './pages/trainees/trainees.component';
 
 const routes: Routes = [
@@ -41,6 +42,11 @@ const routes: Routes = [
     path: 'leaderboard',
     component: LeaderboardComponent,
     data: { title: "Leaderboard" }
+  },
+  {
+    path: 'progress',
+    component: TraineeProgressComponent,
+    data: { title: "Progress" }
   },
 ];
 

@@ -1,0 +1,56 @@
+<div class="course-progress-card mat-elevation-z2">
+  <div class="course-header">
+    <div class="course-cover">
+      
+    </div>
+    <div class="header-text">
+      <h2>{{ courseProgress.course.name }}</h2>
+      <div class="course-description">
+        <span>
+          Date started: {{ courseProgress.registration.dateStarted | date }}
+        </span>
+        <span *ngIf="courseProgress.registration.dateFinished">
+          | Date finished: {{ courseProgress.registration.dateFinished | date }}
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="progress-summary">
+    <div class="summary-section">
+      <div class="value">{{ quizCorrectAnswers }} / {{ quizTotalQuestions }}</div>
+      <div class="explanation">Correct questions answers</div>
+    </div>
+    <div class="summary-section">
+      <div class="value">{{ passedSectionsLength }} / {{ totalSections }}</div>
+      <div class="explanation">Sections passed</div>
+    </div>
+  </div>
+  <mat-expansion-panel class="mat-elevation-z0">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Detailed progress
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-list class="progress-list">
+      <mat-list-item *ngFor="let section of passedSections">
+        <mat-icon mat-list-icon *ngIf="section.type == 'learning'" class="success">
+          done
+        </mat-icon>
+        <mat-icon mat-list-icon *ngIf="section.type == 'quiz' && section.passedQuiz" class="success">
+          done
+        </mat-icon>
+        <mat-icon mat-list-icon *ngIf="section.type == 'quiz' && !section.passedQuiz" class="severe">
+          close
+        </mat-icon>
+        <div mat-line>{{ section.title }}</div>
+        <div mat-line *ngIf="section.type == 'quiz'" class="muted">
+          <span *ngFor="let attempt of section.quizAttempts; let order = index; let isLast = last">
+            <b>{{ order + 1 | ordinal }} attempt: </b>
+            <span>{{ attempt.correctAnswers }}/{{ attempt.totalQuestions }}</span>
+            <span *ngIf="!isLast">; </span>
+          </span>
+        </div>
+      </mat-list-item>
+    </mat-list>
+  </mat-expansion-panel>
+</div>

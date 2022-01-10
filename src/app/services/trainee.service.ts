@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { CourseProgress } from '../lib/models/CourseProgress';
 import { Trainee, TraineeRequest } from '../lib/models/user/Trainee';
 import { AuthService } from './auth.service';
 
@@ -21,26 +22,40 @@ export class TraineeService {
     );
   }
 
-  addTrainee(project: TraineeRequest): Observable<Trainee> {
+  addTrainee(trainee: TraineeRequest): Observable<Trainee> {
     const url = `${environment.apiUrl}/trainees/`;
-    return this.http.post<Trainee>(url, project, this.auth.getPrivateHeaders()).pipe(
+    return this.http.post<Trainee>(url, trainee, this.auth.getPrivateHeaders()).pipe(
       catchError(this.handleError<Trainee>('addTrainee', null))
     );
   }
 
-  editTrainee(project: TraineeRequest): Observable<Trainee> {
-    const url = `${environment.apiUrl}/trainees/${project.id}`;
-    return this.http.put<Trainee>(url, project, this.auth.getPrivateHeaders()).pipe(
+  editTrainee(trainee: TraineeRequest): Observable<Trainee> {
+    const url = `${environment.apiUrl}/trainees/${trainee.id}`;
+    return this.http.put<Trainee>(url, trainee, this.auth.getPrivateHeaders()).pipe(
       catchError(this.handleError<Trainee>('editTrainee', null))
     );
   }
 
-  deleteTrainee(project: TraineeRequest): Observable<boolean> {
-    const url = `${environment.apiUrl}/trainees/${project.id}`;
+  deleteTrainee(trainee: TraineeRequest): Observable<boolean> {
+    const url = `${environment.apiUrl}/trainees/${trainee.id}`;
     return this.http.delete<any>(url, this.auth.getPrivateHeaders()).pipe(
       map(_ => true),
       catchError(this.handleError<boolean>('deleteTrainee', false))
     );
+  }
+
+  getProgress(traineeId: number): Observable<CourseProgress[]> {
+    const url = `${environment.apiUrl}/progress/trainee/${traineeId}`;
+    return this.http.get<CourseProgress[]>(url, this.auth.getPrivateHeaders()).pipe(
+      catchError(this.handleError<CourseProgress[]>('getProgress', []))
+    )
+  }
+
+  getProgressForCourse(traineeId: number, courseId: number): Observable<CourseProgress> {
+    const url = `${environment.apiUrl}/progress/trainee/${traineeId}/course/${courseId}`;
+    return this.http.get<CourseProgress>(url, this.auth.getPrivateHeaders()).pipe(
+      catchError(this.handleError<CourseProgress>('getProgressForCourse', null))
+    )
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
