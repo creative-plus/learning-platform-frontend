@@ -24,6 +24,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { CourseViewerComponent } from './course-viewer/course-viewer.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { MatTableModule } from '@angular/material/table';
+import { OrdinalPipe } from './pipes/ordinal.pipe';
 
 
 const materialDeps = [
@@ -52,7 +53,8 @@ const materialDeps = [
     LoadingComponent,
     CourseListComponent,
     CourseViewerComponent,
-    LeaderboardComponent
+    LeaderboardComponent,
+    OrdinalPipe,
   ],
   imports: [
     CommonModule,
@@ -70,6 +72,7 @@ const materialDeps = [
     FormsModule,
     CourseViewerComponent,
     LeaderboardComponent,
+    OrdinalPipe,
   ]
 })
 export class SharedModule { }
