@@ -155,3 +155,15 @@ button.with-icon {
 .mat-progress-spinner.white circle, .mat-spinner.white circle {
   stroke: #fff;
 }
+
+.muted {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.success {
+  color: #2e7d32;
+}
+
+.severe {
+  color: #d32f2f;
+}
