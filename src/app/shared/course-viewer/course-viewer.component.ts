@@ -103,6 +103,8 @@ export class CourseViewerComponent implements OnInit {
         const nextSection = this.courseSections.find(section => section.order == this.currentSection.order + 1);
         if(nextSection) {
           this.goToSection(nextSection.id);
+        } else {
+          this.exit();
         }
       } else {
         this.isLoadingContent = false;
