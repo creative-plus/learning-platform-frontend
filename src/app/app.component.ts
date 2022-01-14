@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
   constructor(private auth: AuthService, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.auth.getAuthUser().subscribe(user => {
+    this.auth.userData.subscribe(user => {
       this.user = user;
       this.loading = false;
     });
