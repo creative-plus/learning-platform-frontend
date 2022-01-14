@@ -13,6 +13,10 @@ const routes: Routes = [
     component: CourseViewerComponent,
     data: { hideToolbar: true, hideDrawer: true }
   },
+  {
+    path: '**',
+    redirectTo: "courses"
+  },
 ];
 
 @NgModule({

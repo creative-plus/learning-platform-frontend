@@ -46,6 +46,13 @@
           <div mat-line>Leaderboard</div>
         </a>
       </mat-list>
+      <mat-list *ngIf="user?.type == 'trainee'" class="nav-list">
+        <div mat-subheader>Courses</div>
+        <a mat-list-item routerLink="trainee/courses" routerLinkActive="active" class="nav-list-item">
+          <mat-icon mat-list-icon>school</mat-icon>
+          <div mat-line>Courses</div>
+        </a>
+      </mat-list>
     </mat-drawer>
     <div class="main-content" [@routeAnimations]="prepareRoute(outlet)">
       <router-outlet #outlet="outlet"></router-outlet>

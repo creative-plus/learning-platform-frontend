@@ -48,6 +48,10 @@ const routes: Routes = [
     component: TraineeProgressComponent,
     data: { title: "Progress" }
   },
+  {
+    path: '**',
+    redirectTo: "courses"
+  },
 ];
 
 @NgModule({
