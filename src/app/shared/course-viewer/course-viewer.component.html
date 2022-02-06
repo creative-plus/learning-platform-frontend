@@ -29,7 +29,7 @@
         <span *ngIf="currentSection.type == 'quiz'">Quiz: </span>
         <span>{{ currentSection.title }}</span>
       </div>
-      <div class="section-content" *ngIf="currentSection.type == 'learning'" [innerHTML]="contentSectionLearning.content"></div>
+      <quill-view-html class="section-content" *ngIf="currentSection.type == 'learning'" [content]="contentSectionLearning.content"></quill-view-html>
       <div class="section-quiz" *ngIf="quizAnswersForm && currentSection.type == 'quiz'" [formGroup]="quizAnswersForm">
         <div class="tip-card severe" *ngIf="quizHasWrongAnswers">
           <mat-icon>error</mat-icon>

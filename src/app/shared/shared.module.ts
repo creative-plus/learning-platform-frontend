@@ -25,6 +25,7 @@ import { CourseViewerComponent } from './course-viewer/course-viewer.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { MatTableModule } from '@angular/material/table';
 import { OrdinalPipe } from './pipes/ordinal.pipe';
+import { QuillModule } from 'ngx-quill';
 
 
 const materialDeps = [
@@ -61,6 +62,7 @@ const materialDeps = [
     ReactiveFormsModule,
     FormsModule,
     FlexLayoutModule,
+    QuillModule.forRoot(),
     ...materialDeps,
   ],
   exports: [
@@ -73,6 +75,7 @@ const materialDeps = [
     CourseViewerComponent,
     LeaderboardComponent,
     OrdinalPipe,
+    QuillModule
   ]
 })
 export class SharedModule { }

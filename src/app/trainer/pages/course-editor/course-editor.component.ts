@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { of, Subscription } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { Course } from 'src/app/lib/models/course/Course';
@@ -17,6 +16,12 @@ import { ArrayLenghtValidator } from 'src/app/lib/validators/ArrayLengthValidato
 import { copyObject } from 'src/app/lib/util';
 import { CourseService } from 'src/app/services/course.service';
 import { CourseViewMockService } from 'src/app/services/course-view-mock.service';
+import { MediaService } from 'src/app/services/media.service';
+
+import Quill from 'quill'
+
+import ImageResize from 'quill-image-resize-module'
+Quill.register('modules/imageResize', ImageResize)
 
 @Component({
   selector: 'app-course-editor',
@@ -27,7 +32,26 @@ import { CourseViewMockService } from 'src/app/services/course-view-mock.service
 export class CourseEditorComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private courseService: CourseService, private router: Router,
-    private snackbar: MatSnackBar, private courseViewMockService: CourseViewMockService) { }
+    private snackbar: MatSnackBar, private courseViewMockService: CourseViewMockService,
+    private mediaService: MediaService) { 
+      this.modules = {
+        imageResize: {},
+        toolbar: [
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'script': 'sub'}, { 'script': 'super' }],
+          [{ 'indent': '-1'}, { 'indent': '+1' }],
+          [{ 'size': ['small', false, 'large', 'huge'] }],
+          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+          [{ 'color': [] }, { 'background': [] }],
+          [{ 'align': [] }],
+          ['link', 'image']
+        ]
+      }
+  }
+
+  modules = {};
 
   initialCourse!: Course | null;
   courseId!: number | null;
@@ -291,14 +315,6 @@ export class CourseEditorComponent implements OnInit {
 
   get canRemoveSections() {
     return this.courseFormSections?.controls.length > 1;
-  }
-
-  editorConfig: AngularEditorConfig = { 
-    editable: true,
-    sanitize: true,
-    toolbarHiddenButtons: [
-      ['fontName']
-    ]
   }
 
   exit() {

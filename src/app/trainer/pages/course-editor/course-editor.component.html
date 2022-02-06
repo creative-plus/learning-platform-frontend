@@ -56,7 +56,7 @@
             </div>
             <!-- Learning -->
             <div *ngIf="section.get('type').value == 'learning'" formGroupName="typeForm" class="section-body hide-preview">
-              <angular-editor formControlName="content" [config]="editorConfig" [id]="'editor' + s"></angular-editor>
+              <quill-editor formControlName="content" [id]="'editor' + s" [modules]="modules"></quill-editor>
             </div>
             <!-- Quiz -->
             <div *ngIf="section.get('type').value == 'quiz'" formGroupName="typeForm" class="section-body hide-preview">

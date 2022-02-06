@@ -7,7 +7,6 @@ import { SharedModule } from '../shared/shared.module';
 import { CourseEditorComponent } from './pages/course-editor/course-editor.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { AngularEditorModule } from '@kolkov/angular-editor';
 import { ProjectsComponent } from './pages/projects/projects.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ProjectEditorComponent } from './dialogs/project-editor/project-editor.component';
@@ -34,7 +33,6 @@ import { CourseProgressComponent } from './components/course-progress/course-pro
     SharedModule,
     DragDropModule,
     MatSlideToggleModule,
-    AngularEditorModule,
     MatExpansionModule
   ]
 })
