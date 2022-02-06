@@ -39,6 +39,7 @@ export class CourseViewMockService extends AbstractCourseViewService {
     course.id = id;
     const setCourse = copyObject(course);
     setCourse?.sections?.forEach(section => {
+      section.id = randomInt(100000000);
       if(section.type == 'quiz') {
         (section as Quiz).questions.forEach(question => {
           question.id = randomInt(100000000);

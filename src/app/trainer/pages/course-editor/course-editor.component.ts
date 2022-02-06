@@ -113,7 +113,7 @@ export class CourseEditorComponent implements OnInit {
       sectionFormGroup.addControl("typeForm", quizForm);
     }
     if(atIndex != null) {
-      this.courseFormSections.controls.splice(atIndex, 0, sectionFormGroup);
+      this.courseFormSections.insert(atIndex, sectionFormGroup);
     } else {
       this.courseFormSections.push(sectionFormGroup);
     }
@@ -155,8 +155,11 @@ export class CourseEditorComponent implements OnInit {
     this.subscribeToValueChanges(this.courseForm);
   }
 
-  sectionDrop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.courseFormSections.controls, event.previousIndex, event.currentIndex);
+  sectionDrop(event: CdkDragDrop<SectionLike[]>) {
+    const section = this.courseFormSections.get(event.previousIndex.toString());
+    this.courseFormSections.insert(event.currentIndex, section, { emitEvent: false });
+    const toRemove = event.currentIndex < event.previousIndex ? event.previousIndex + 1 : event.previousIndex;
+    this.courseFormSections.removeAt(toRemove);
   }
 
   getQuizQuestions(section: AbstractControl) {
@@ -185,7 +188,7 @@ export class CourseEditorComponent implements OnInit {
   }
 
   removeSection(sectionIndex: number) {
-    this.courseFormSections.controls.splice(sectionIndex, 1);
+    this.courseFormSections.removeAt(sectionIndex);
     const newSelected = sectionIndex - 1;
     this.selectedSectionIndex = newSelected >= 0 ? newSelected : 0;
 
@@ -228,7 +231,7 @@ export class CourseEditorComponent implements OnInit {
   private putToMock() {
     if(!this.providingCourseView) return 0;
     const course = this.formValueToCourse(this.courseForm.value);
-    return this.courseViewMockService.putMockCourse(course, this.courseMockId);
+    return this.courseViewMockService.putMockCourse(course, this.courseId || this.courseMockId);
   }
 
   viewCourse() {
@@ -296,6 +299,8 @@ export class CourseEditorComponent implements OnInit {
   saveCourse() {
     const course = this.formValueToCourse(this.courseForm.value);
     const action = isNaN(this.courseId) ? this.courseService.addCourse(course) : this.courseService.editCourse(this.courseId, course);
+    console.log(course);
+    return;
     action.subscribe((course) => {
       if(course) {
         this.snackbar.open("Course saved.");
