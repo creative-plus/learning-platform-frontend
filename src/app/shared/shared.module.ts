@@ -26,6 +26,7 @@ import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { MatTableModule } from '@angular/material/table';
 import { OrdinalPipe } from './pipes/ordinal.pipe';
 import { QuillModule } from 'ngx-quill';
+import { ApiUrlPipe } from './pipes/api-url';
 
 
 const materialDeps = [
@@ -56,6 +57,7 @@ const materialDeps = [
     CourseViewerComponent,
     LeaderboardComponent,
     OrdinalPipe,
+    ApiUrlPipe,
   ],
   imports: [
     CommonModule,
@@ -75,7 +77,9 @@ const materialDeps = [
     CourseViewerComponent,
     LeaderboardComponent,
     OrdinalPipe,
+    ApiUrlPipe,
     QuillModule
-  ]
+  ],
+  providers: [ApiUrlPipe]
 })
 export class SharedModule { }

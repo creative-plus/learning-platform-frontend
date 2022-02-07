@@ -14,6 +14,7 @@ import { TraineesComponent } from './pages/trainees/trainees.component';
 import { TraineeEditorComponent } from './dialogs/trainee-editor/trainee-editor.component';
 import { TraineeProgressComponent } from './pages/trainee-progress/trainee-progress.component';
 import { CourseProgressComponent } from './components/course-progress/course-progress.component';
+import { ApiUrlPipe } from '../shared/pipes/api-url';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import { CourseProgressComponent } from './components/course-progress/course-pro
     DragDropModule,
     MatSlideToggleModule,
     MatExpansionModule
-  ]
+  ],
+  providers: [ApiUrlPipe]
 })
 export class TrainerModule { }

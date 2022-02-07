@@ -4,7 +4,7 @@ import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, V
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subscription } from 'rxjs';
-import { debounceTime, switchMap } from 'rxjs/operators';
+import { debounceTime, map, switchMap } from 'rxjs/operators';
 import { Course } from 'src/app/lib/models/course/Course';
 import { CourseSection } from 'src/app/lib/models/course/course-sections/CourseSection';
 import { CourseSectionType } from 'src/app/lib/models/course/course-sections/CourseSectionType';
@@ -21,7 +21,12 @@ import { MediaService } from 'src/app/services/media.service';
 import Quill from 'quill'
 
 import ImageResize from 'quill-image-resize-module'
+import { ImageHandler, Options } from 'ngx-quill-upload';
+import { ApiUrlPipe } from 'src/app/shared/pipes/api-url';
+
+
 Quill.register('modules/imageResize', ImageResize)
+Quill.register('modules/imageHandler', ImageHandler);
 
 @Component({
   selector: 'app-course-editor',
@@ -33,7 +38,7 @@ export class CourseEditorComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private courseService: CourseService, private router: Router,
     private snackbar: MatSnackBar, private courseViewMockService: CourseViewMockService,
-    private mediaService: MediaService) { 
+    private mediaService: MediaService, private apiUrlPipe: ApiUrlPipe) { 
       this.modules = {
         imageResize: {},
         toolbar: [
@@ -47,7 +52,16 @@ export class CourseEditorComponent implements OnInit {
           [{ 'color': [] }, { 'background': [] }],
           [{ 'align': [] }],
           ['link', 'image']
-        ]
+        ],
+        imageHandler: {
+          upload: (file: File) => {
+           return this.mediaService.uploadFile(file)
+            .pipe(
+              map(meta => this.apiUrlPipe.transform(meta.url))
+            ) 
+           .toPromise();
+          }
+        } as Options,
       }
   }
 
@@ -299,8 +313,6 @@ export class CourseEditorComponent implements OnInit {
   saveCourse() {
     const course = this.formValueToCourse(this.courseForm.value);
     const action = isNaN(this.courseId) ? this.courseService.addCourse(course) : this.courseService.editCourse(this.courseId, course);
-    console.log(course);
-    return;
     action.subscribe((course) => {
       if(course) {
         this.snackbar.open("Course saved.");
