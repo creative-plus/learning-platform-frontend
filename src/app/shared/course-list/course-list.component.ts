@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Course } from 'src/app/lib/models/course/Course';
 import { UserType } from 'src/app/lib/models/user/UserType';
@@ -18,6 +18,7 @@ export class CourseListComponent implements OnInit {
 
   @Input("courses") _courses!: Course[];
   @Input() perspective: UserType = 'trainer';
+  @Output() reload: EventEmitter<void> = new EventEmitter<void>();
 
   get courses() {
     return this._courses as EnrichedCourse[];
@@ -28,7 +29,16 @@ export class CourseListComponent implements OnInit {
   }
 
   deleteCourse(courseIndex: number) {
-
+    if(!confirm("Are you sure you want to delete this course?")) return;
+    const course = this.courses[courseIndex];
+    course.loading = true;
+    this.courseService.deleteCourse(course.id).subscribe(res => {
+      if(res) {
+        this.reload.emit();
+      } else {
+        course.loading = false;
+      }
+    })
   }
 
   seeLeaderboard(courseIndex: number) {

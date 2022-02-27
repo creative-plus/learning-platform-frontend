@@ -17,9 +17,7 @@ export class CoursesComponent implements OnInit, OnDestroy {
   courses!: Course[];
 
   ngOnInit(): void {
-    this.courseSubscription = this.courseService.getAllCourses().subscribe(courses => {
-      this.courses = courses;
-    });
+    this.loadCourses();
   }
 
   ngOnDestroy(): void {
@@ -28,6 +26,13 @@ export class CoursesComponent implements OnInit, OnDestroy {
 
   addCourse() {
     this.router.navigate(["trainer", "courses", "add"]);
+  }
+
+  loadCourses() {
+    this.courseSubscription?.unsubscribe();
+    this.courseSubscription = this.courseService.getAllCourses().subscribe(courses => {
+      this.courses = courses;
+    });
   }
 
 }

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Course } from '../lib/models/course/Course';
 import { CourseRegistration } from '../lib/models/course/CourseRegistration';
@@ -43,6 +43,14 @@ export class CourseService {
     const url = `${environment.apiUrl}/courses/${id}`;
     return this.http.put<Course>(url, course, this.auth.getPrivateHeaders()).pipe(
       catchError(this.handleError<Course>('editCourse', null))
+    );
+  }
+
+  deleteCourse(id: number): Observable<boolean> {
+    const url = `${environment.apiUrl}/courses/${id}`;
+    return this.http.delete(url, this.auth.getPrivateHeaders()).pipe(
+      map(_ => true),
+      catchError(this.handleError<boolean>('deleteCourse', false))
     );
   }
 
