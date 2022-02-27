@@ -7,10 +7,26 @@
     background: #bdbdbd;
     position: relative;
 
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .progress-bar-container {
       position: absolute;
       width: 100%;
       bottom: 0;
+      z-index: 2;
     }
 
     .fab-container {
@@ -24,6 +40,7 @@
       position: absolute;
       top: 8px;
       right: 8px;
+      z-index: 2;
     }
   }
   

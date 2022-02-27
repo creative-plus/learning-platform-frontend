@@ -1,7 +1,7 @@
 <div class="course-progress-card mat-elevation-z2">
   <div class="course-header">
     <div class="course-cover">
-      
+      <img [src]="courseProgress.course.coverImage| apiUrl" *ngIf="courseProgress.course.coverImage" />
     </div>
     <div class="header-text">
       <h2>{{ courseProgress.course.name }}</h2>

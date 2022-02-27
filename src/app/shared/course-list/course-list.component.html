@@ -15,7 +15,7 @@
   <div class="course-grid-inner" fxFlex="50" *ngFor="let course of courses; let i = index">
     <div class="course-card mat-elevation-z2">
       <div class="course-cover-container">
-        <img src *ngIf="false" />
+        <img [src]="course.coverImage | apiUrl" *ngIf="course.coverImage" />
         <div class="progress-bar-container" *ngIf="course.registration">
           <mat-progress-bar [value]="course.registration.sections.length / (course.sectionNumber || 1) * 100">
           </mat-progress-bar>
