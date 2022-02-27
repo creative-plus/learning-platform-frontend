@@ -23,6 +23,20 @@
   <div class="course-form-container" (click)="selectedSectionIndex = null">
     <div class="course-form-inner" [formGroup]="courseForm">
       <mat-card class="course-header-card" fxLayout="row grid">
+        <div class="cover-image-container">
+          <img [src]="courseCoverImage" *ngIf="courseCoverImage"/>
+          <div class="actions">
+            <input type="file" id="coverImage" (change)="changeCoverImage($event)" accept="image/jpg, image/jpeg, image/png"/>
+            <label class="mat-mini-fab mat-white" for="coverImage">
+              <span class="mat-button-wrapper">
+                <mat-icon>upload</mat-icon>
+              </span>
+            </label>
+            <button mat-mini-fab color="white" *ngIf="courseCoverImage" (click)="formCoverImage.setValue(null)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
         <mat-form-field class="course-title" fxFlex="100" appearance="standard">
           <mat-label>Course title</mat-label>
           <input matInput formControlName="name" type="text" name="courseName" />

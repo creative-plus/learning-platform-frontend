@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
 import { Course } from 'src/app/lib/models/course/Course';
 import { CourseSection } from 'src/app/lib/models/course/course-sections/CourseSection';
@@ -13,7 +13,7 @@ import { Quiz } from 'src/app/lib/models/course/course-sections/quiz/Quiz';
 import { QuizQuestion } from 'src/app/lib/models/course/course-sections/quiz/QuizQuestion';
 import { QuizQuestionAnswer } from 'src/app/lib/models/course/course-sections/quiz/QuizQuestionAnswer';
 import { ArrayLenghtValidator } from 'src/app/lib/validators/ArrayLengthValidator';
-import { copyObject } from 'src/app/lib/util';
+import { base64toFile, copyObject, fileToBase64 } from 'src/app/lib/util';
 import { CourseService } from 'src/app/services/course.service';
 import { CourseViewMockService } from 'src/app/services/course-view-mock.service';
 import { MediaService } from 'src/app/services/media.service';
@@ -23,6 +23,7 @@ import Quill from 'quill'
 import ImageResize from 'quill-image-resize-module'
 import { ImageHandler, Options } from 'ngx-quill-upload';
 import { ApiUrlPipe } from 'src/app/shared/pipes/api-url';
+import { MediaMeta } from 'src/app/lib/models/MediaMeta';
 
 
 Quill.register('modules/imageResize', ImageResize)
@@ -83,6 +84,7 @@ export class CourseEditorComponent implements OnInit {
   courseForm = new FormGroup({
     name: new FormControl("", [Validators.required]),
     description: new FormControl("", [Validators.maxLength(255)]),
+    coverImage: new FormControl(null),
     sections: new FormArray([], [ArrayLenghtValidator({ min: 1 })])
   });
 
@@ -158,6 +160,7 @@ export class CourseEditorComponent implements OnInit {
     this.courseForm = new FormGroup({
       name: new FormControl(this.initialCourse?.name, [Validators.required]),
       description: new FormControl(this.initialCourse?.description, [Validators.maxLength(255)]),
+      coverImage: new FormControl(this.initialCourse?.coverImage),
       sections: new FormArray([], [ArrayLenghtValidator({ min: 1 })])
     });
     (this.initialCourse?.sections || [null]).sort((a, b) => a?.order - b?.order)
@@ -292,6 +295,7 @@ export class CourseEditorComponent implements OnInit {
     this.courseForm = new FormGroup({
       name: new FormControl(course?.name, [Validators.required]),
       description: new FormControl(course?.description, [Validators.maxLength(255)]),
+      coverImage: new FormControl(course?.coverImage),
       sections: new FormArray([], [ArrayLenghtValidator({ min: 1 })])
     });
     course?.sections?.sort((a, b) => a.order - b.order)
@@ -313,13 +317,34 @@ export class CourseEditorComponent implements OnInit {
   saveCourse() {
     const course = this.formValueToCourse(this.courseForm.value);
     const action = isNaN(this.courseId) ? this.courseService.addCourse(course) : this.courseService.editCourse(this.courseId, course);
-    action.subscribe((course) => {
+    let coverSaveAction: Observable<string>;
+    if(!course.coverImage || course.coverImage.startsWith("/media/")) {
+      coverSaveAction = of(course.coverImage);
+    } else {
+      const file = base64toFile(course.coverImage, "course_cover")
+      coverSaveAction = this.mediaService.uploadFile(file).pipe(map(meta => meta.url));
+    }
+    coverSaveAction.pipe(
+      switchMap(mediaUrl => {
+        course.coverImage = mediaUrl;
+        return action;
+      })
+    ).subscribe((course) => {
       if(course) {
         this.snackbar.open("Course saved.");
         this.initialCourse = course;
         this.courseId = course.id;
       }
     });
+  }
+
+  async changeCoverImage(event: Event) {
+    const element = event.currentTarget as HTMLInputElement;
+    let fileList: FileList | null = element.files;
+    if (fileList) {
+      const base64 = await fileToBase64(fileList[0]);
+      this.formCoverImage.setValue(base64);
+    }
   }
 
   get canUndo() {
@@ -334,6 +359,19 @@ export class CourseEditorComponent implements OnInit {
     return this.courseFormSections?.controls.length > 1;
   }
 
+  get formCoverImage() {
+    return this.courseForm.get("coverImage");
+  }
+
+  get courseCoverImage() {
+    const value: string = this.courseForm.get("coverImage").value
+    if(!value) return null;
+    if(value.startsWith('/media/')) {
+      return this.apiUrlPipe.transform(value);
+    }
+    return value;
+  }
+
   exit() {
     this.router.navigate(["trainer", "courses"]);
   }
@@ -342,6 +380,7 @@ export class CourseEditorComponent implements OnInit {
 interface FormValue {
   name: string;
   description: string;
+  coverImage: string;
   sections: SectionLike[];
 }
 
