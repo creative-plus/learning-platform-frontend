@@ -11,11 +11,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { JwtInterceptor } from './providers/JwtInterceptor';
+import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,

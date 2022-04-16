@@ -68,6 +68,25 @@ export class AuthService {
     );
   }
 
+  signInWithTokenAndChangePassword(token: string, password: string): Observable<AuthResponse> {
+    const url = `${environment.apiUrl}/auth/token/change-password`;
+    return this.http.post<AuthResponse>(url, { token, password }).pipe(
+      map(res => {
+        this.setToken((res as any).token);
+        this.userDataSource.next((res as any).user);
+        return res
+      }),
+      catchError(this.handleAuthError('signInWithTokenAndChangePassword'))
+    );
+  }
+
+  checkPasswordResetToken(token: string): Observable<{ email: string }> {
+    const url = `${environment.apiUrl}/auth/token/check`;
+    return this.http.post<{ email: string }>(url, { token }).pipe(
+      catchError(this.handleError("checkPasswordResetToken", { email: null }))
+    );
+  }
+
   getPrivateHeaders() {
     return {
       headers: new HttpHeaders({
@@ -77,9 +96,16 @@ export class AuthService {
     };
   }
 
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      this.snackbar.open(error.error?.message || "Something went wrong.");
+      return of(result as T);
+    };
+  }
+
   private handleAuthError(result?: any) {
     return (error: HttpErrorResponse): Observable<AuthResponse> => {
-      this.snackbar.open(error.error?.message || "A apărut o eroare.");
+      this.snackbar.open(error.error?.message || "Something went wrong.");
       return of({ error: error.error.name || true } as AuthResponse);
     };
   }
