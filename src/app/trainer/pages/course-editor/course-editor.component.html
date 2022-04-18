@@ -40,10 +40,12 @@
         <mat-form-field class="course-title" fxFlex="100" appearance="standard">
           <mat-label>Course title</mat-label>
           <input matInput formControlName="name" type="text" name="courseName" />
+          <mat-error>Title must be less than 128 characters.</mat-error>
         </mat-form-field>
         <mat-form-field class="course-description" fxFlex="100" appearance="standard">
           <mat-label>Course description</mat-label>
           <input matInput formControlName="description" type="text" name="courseDescription" />
+          <mat-error>Description must be less than 255 characters.</mat-error>
         </mat-form-field>
       </mat-card>
       <div cdkDropList class="course-sections" (cdkDropListDropped)="sectionDrop($event)" formArrayName="sections">
@@ -63,7 +65,7 @@
               <mat-form-field class="course-title" fxFlex="30" appearance="outline">
                 <mat-label>Section type</mat-label>
                 <mat-select formControlName="type" (valueChange)="changeSectionType(s, $event)">
-                  <mat-option value="learning">Leaning</mat-option>
+                  <mat-option value="learning">Learning</mat-option>
                   <mat-option value="quiz">Quiz</mat-option>
                 </mat-select>
               </mat-form-field>

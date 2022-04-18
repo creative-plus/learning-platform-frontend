@@ -82,7 +82,7 @@ export class CourseEditorComponent implements OnInit {
   
 
   courseForm = new FormGroup({
-    name: new FormControl("", [Validators.required]),
+    name: new FormControl("", [Validators.required, Validators.maxLength(128)]),
     description: new FormControl("", [Validators.maxLength(255)]),
     coverImage: new FormControl(null),
     sections: new FormArray([], [ArrayLenghtValidator({ min: 1 })])
@@ -158,7 +158,7 @@ export class CourseEditorComponent implements OnInit {
 
   resetForm() {
     this.courseForm = new FormGroup({
-      name: new FormControl(this.initialCourse?.name, [Validators.required]),
+      name: new FormControl(this.initialCourse?.name, [Validators.required, Validators.maxLength(128)]),
       description: new FormControl(this.initialCourse?.description, [Validators.maxLength(255)]),
       coverImage: new FormControl(this.initialCourse?.coverImage),
       sections: new FormArray([], [ArrayLenghtValidator({ min: 1 })])

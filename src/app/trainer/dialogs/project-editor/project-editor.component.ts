@@ -27,7 +27,7 @@ export class ProjectEditorComponent implements OnInit {
     {
       "id": new FormControl(this.data.project?.id),
       "name": new FormControl(this.data.project?.name, [Validators.required]),
-      "description": new FormControl(this.data.project?.description),
+      "description": new FormControl(this.data.project?.description, [Validators.maxLength(255)]),
       "startDate": new FormControl(this.data.project?.startDate, [Validators.required]),
       "endDate": new FormControl(this.data.project?.endDate, [Validators.required]),
     }, 
