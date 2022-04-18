@@ -76,41 +76,55 @@
             </div>
             <!-- Quiz -->
             <div *ngIf="section.get('type').value == 'quiz'" formGroupName="typeForm" class="section-body hide-preview">
-              <h3>Questions</h3>
-              <div class="quiz-questions" formGroupName="questions">
-                <mat-card class="quiz-question" *ngFor="let question of getQuizQuestions(section).controls; let q = index">
-                  <form [formGroupName]="q">
-                    <div class="question-header" fxLayout="row grid">
-                      <mat-form-field fxFlex="100" appearance="outline">
-                        <mat-label>Question {{ q + 1 }}</mat-label>
-                        <input matInput formControlName="text" type="text" name="questionText" />
-                      </mat-form-field>
-                      <div fxFlex="100" fxLayout="row" class="multiple-answer-toggle">
-                        <div fxFlex="100">Multiple answer question</div>
-                        <mat-slide-toggle formControlName="multipleAnswer"></mat-slide-toggle>
-                      </div>
-                    </div>
-                    <div class="question-answers" fxLayout="row grid" formGroupName="answers">
-                      <div class="question-answer"
-                        *ngFor="let answer of getQuizQuestionAnswers(question).controls; let a = index"
-                        [formGroupName]="a"
-                        fxLayout="row"
-                        fxFlex="100"
-                      >
-                        <mat-checkbox formControlName="correct"></mat-checkbox>
-                        <mat-form-field fxFlex="100" appearance="outline">
-                          <mat-label>Answer {{ a + 1 }}</mat-label>
-                          <input matInput formControlName="text" type="text" name="questionText" />
-                        </mat-form-field>
-                      </div>
-                      <button mat-button 
-                        (click)="addQuizQuestionAnswer(null, getQuizQuestionAnswers(question))"
-                        [disabled]="getQuizQuestionAnswers(question).controls.length >= 6"
-                        >Add answer</button>
-                    </div>
-                  </form>
-                </mat-card>
-                <button mat-button (click)="addQuizQuestion(null, getQuizQuestions(section))">Add question</button>
+              <div fxLayout="row grid">
+                <div fxLayout="row" fxLayoutGap="10px" fxFlex="100">
+                  <mat-form-field appearance="outline" fxFlex="50">
+                    <mat-label>Threshold</mat-label>
+                    <input matInput formControlName="correctAnswersThreshold" type="number" name="correctAnswersThreshold" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" fxFlex="50">
+                    <mat-label>Allowed attempts</mat-label>
+                    <input matInput type="number" value="2" disabled/>
+                  </mat-form-field>
+                </div>
+                <div fxFlex="100">
+                  <h3>Questions</h3>
+                  <div class="quiz-questions" formGroupName="questions">
+                    <mat-card class="quiz-question" *ngFor="let question of getQuizQuestions(section).controls; let q = index">
+                      <form [formGroupName]="q">
+                        <div class="question-header" fxLayout="row grid">
+                          <mat-form-field fxFlex="100" appearance="outline">
+                            <mat-label>Question {{ q + 1 }}</mat-label>
+                            <input matInput formControlName="text" type="text" name="questionText" />
+                          </mat-form-field>
+                          <div fxFlex="100" fxLayout="row" class="multiple-answer-toggle">
+                            <div fxFlex="100">Multiple answer question</div>
+                            <mat-slide-toggle formControlName="multipleAnswer"></mat-slide-toggle>
+                          </div>
+                        </div>
+                        <div class="question-answers" fxLayout="row grid" formGroupName="answers">
+                          <div class="question-answer"
+                            *ngFor="let answer of getQuizQuestionAnswers(question).controls; let a = index"
+                            [formGroupName]="a"
+                            fxLayout="row"
+                            fxFlex="100"
+                          >
+                            <mat-checkbox formControlName="correct"></mat-checkbox>
+                            <mat-form-field fxFlex="100" appearance="outline">
+                              <mat-label>Answer {{ a + 1 }}</mat-label>
+                              <input matInput formControlName="text" type="text" name="questionText" />
+                            </mat-form-field>
+                          </div>
+                          <button mat-button 
+                            (click)="addQuizQuestionAnswer(null, getQuizQuestionAnswers(question))"
+                            [disabled]="getQuizQuestionAnswers(question).controls.length >= 6"
+                            >Add answer</button>
+                        </div>
+                      </form>
+                    </mat-card>
+                    <button mat-button (click)="addQuizQuestion(null, getQuizQuestions(section))">Add question</button>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="separator show-selected hide-preview"></div>

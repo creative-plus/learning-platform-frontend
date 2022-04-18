@@ -120,7 +120,8 @@ export class CourseEditorComponent implements OnInit {
       sectionFormGroup.addControl("typeForm", learningForm);
     } else {
       const quizForm = new FormGroup({
-        questions: new FormArray([], [ArrayLenghtValidator({ min: 1, max: 10 })])
+        questions: new FormArray([], [ArrayLenghtValidator({ min: 1, max: 10 })]),
+        correctAnswersThreshold: new FormControl((<Quiz>section)?.correctAnswersThreshold, [Validators.min(0), Validators.max(10)])
       });
       if(section) {
         (<Quiz>section).questions.forEach(question => 
@@ -197,7 +198,8 @@ export class CourseEditorComponent implements OnInit {
       sectionFormGroup.addControl("typeForm", learningForm);
     } else {
       const quizForm = new FormGroup({
-        questions: new FormArray([], [ArrayLenghtValidator({ min: 1, max: 10 })])
+        questions: new FormArray([], [ArrayLenghtValidator({ min: 1, max: 10 })]),
+        correctAnswersThreshold: new FormControl(null, [Validators.min(0), Validators.max(10)])
       });
       this.addQuizQuestion(null, quizForm.get("questions") as FormArray);
       sectionFormGroup.addControl("typeForm", quizForm);
