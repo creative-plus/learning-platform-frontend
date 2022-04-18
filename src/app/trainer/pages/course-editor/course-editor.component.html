@@ -99,7 +99,7 @@
                           </mat-form-field>
                           <div fxFlex="100" fxLayout="row" class="multiple-answer-toggle">
                             <div fxFlex="100">Multiple answer question</div>
-                            <mat-slide-toggle formControlName="multipleAnswer"></mat-slide-toggle>
+                            <mat-slide-toggle formControlName="multipleAnswer" (change)="checkAnswerList(null, question)"></mat-slide-toggle>
                           </div>
                         </div>
                         <div class="question-answers" fxLayout="row grid" formGroupName="answers">
@@ -109,7 +109,7 @@
                             fxLayout="row"
                             fxFlex="100"
                           >
-                            <mat-checkbox formControlName="correct"></mat-checkbox>
+                            <mat-checkbox formControlName="correct" (change)="checkAnswerList(a, question)"></mat-checkbox>
                             <mat-form-field fxFlex="100" appearance="outline">
                               <mat-label>Answer {{ a + 1 }}</mat-label>
                               <input matInput formControlName="text" type="text" name="questionText" />

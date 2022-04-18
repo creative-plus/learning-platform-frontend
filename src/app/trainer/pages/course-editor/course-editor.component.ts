@@ -316,6 +316,19 @@ export class CourseEditorComponent implements OnInit {
     return newValue;
   }
 
+  checkAnswerList(selectedIndex: number, question: AbstractControl) {
+    if(question.get('multipleAnswer').value) return;
+    const answers = (question.get('answers') as FormArray).controls;
+    if(!selectedIndex) {
+      selectedIndex = answers.findIndex(answer => answer.get('correct').value);
+    }
+    answers.forEach((answer, index) => {
+      if(index != selectedIndex) {
+        answer.get('correct').setValue(false);
+      }
+    });
+  }
+
   saveCourse() {
     const course = this.formValueToCourse(this.courseForm.value);
     const action = isNaN(this.courseId) ? this.courseService.addCourse(course) : this.courseService.editCourse(this.courseId, course);
