@@ -68,6 +68,9 @@ export class CourseViewerComponent implements OnInit {
       catchError(_ => of(null))
     ).subscribe(section => {
       if(!section) {
+        if(this.isMock) {
+          window.close();
+        }
         this.router.navigate(["/"]);
       } else {
         this.processSection(section);

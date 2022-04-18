@@ -1,5 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -35,7 +35,7 @@ Quill.register('modules/imageHandler', ImageHandler);
   styleUrls: ['./course-editor.component.scss'],
   
 })
-export class CourseEditorComponent implements OnInit {
+export class CourseEditorComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute, private courseService: CourseService, private router: Router,
     private snackbar: MatSnackBar, private courseViewMockService: CourseViewMockService,
@@ -103,6 +103,10 @@ export class CourseEditorComponent implements OnInit {
         this.resetForm();
       }
     })
+  }
+
+  ngOnDestroy(): void {
+    this.courseViewWindow?.close();
   }
 
   get courseFormSections() { return this.courseForm.get("sections") as FormArray };

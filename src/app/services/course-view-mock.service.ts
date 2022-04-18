@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, ReplaySubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of, ReplaySubject } from 'rxjs';
+import { map, timeout } from 'rxjs/operators';
 import { AbstractCourseViewService, QuizWrongAnswerResponse } from '../lib/abstract/AbstractCourseViewService';
 import { Course } from '../lib/models/course/Course';
 import { CourseSection } from '../lib/models/course/course-sections/CourseSection';
@@ -16,56 +16,85 @@ export class CourseViewMockService extends AbstractCourseViewService {
 
   constructor() {
     super();
-    window.addEventListener("storage", () => this._getandSetDb());
-    this._getandSetDb();
+    window.addEventListener("message", this.handleMessage.bind(this));
+    window.addEventListener("beforeunload", () => {
+      this.listeners.forEach((listener) => listener.window.close());
+    });
   }
 
-  private _getandSetDb() {
-    if(this.justUpdatedDb) {
-      this.justUpdatedDb = false;
-      return;
+  sendCourse(courseId: number) {
+    const course = this.sourceDb[courseId];
+    if(!course) return;
+    const listeners = this.listeners.filter(listener => listener.courseId == courseId);
+    listeners.forEach(listener => {
+      listener.window.postMessage({
+        message: "course",
+        course
+      });
+    });
+  }
+
+  handleMessage(event: MessageEvent) {
+    if(event.origin != window.origin) return;
+    const message = event.data?.message;
+    if(message == "getCourse") {
+      const courseId = event.data?.courseId;
+      this.listeners.push({ window: event.source, courseId });
+      this.sendCourse(courseId);
+    } else if(message == "course") {
+      const course = event.data?.course;
+      if(course) {
+        this._db[course.id] = course;
+        this.dbSubject.next(this._db);
+      }
     }
-    const db = JSON.parse(localStorage.getItem("mockCourses")) || {};
-    this.courseMockDb.next(db);
   }
 
-  private justUpdatedDb: boolean = false;
 
-  private courseMockDb: BehaviorSubject<ICourseDb> = new BehaviorSubject({});
+  private listeners: ListenerWindow[] = [];
+
+  private sourceDb: ICourseDb = {};
+
+  private _db: ICourseDb = {};
+
+  private dbSubject: ReplaySubject<ICourseDb> = new ReplaySubject(1);
+  private mockDb = this.dbSubject.asObservable();
 
   putMockCourse(course: Course, mockId?: number) {
-    const db = this.courseMockDb.value;
+    const db = this.sourceDb;
     const id = mockId || course.id || Date.now(); // current time is enough as ID
     course.id = id;
     const setCourse = copyObject(course);
-    setCourse?.sections?.forEach(section => {
-      section.id = randomInt(100000000);
+    setCourse?.sections?.forEach((section, index) => {
+      section.id = section.id || (index + 1);
       if(section.type == 'quiz') {
-        (section as Quiz).questions.forEach(question => {
-          question.id = randomInt(100000000);
-          question.answers.forEach(answer => {
-            answer.id = randomInt(100000000);
+        (section as Quiz).questions.forEach((question, index) => {
+          question.id = question.id || (index + 1);
+          question.answers.forEach((answer, index) => {
+            answer.id = answer.id || (index + 1);
           });
         });
       }
     });
     db[id] = setCourse;
-
-    this.courseMockDb.next(db);
-    this.justUpdatedDb = true;
-    localStorage.setItem("mockCourses", JSON.stringify(db));
+    this.sendCourse(id);
     return id;
   }
 
   getCourse(courseId: number): Observable<Course> {
-    return this.courseMockDb.asObservable().pipe(
+    window.opener.postMessage({
+      message: "getCourse",
+      courseId
+    }, window.origin);
+    return this.mockDb.pipe(
       map(db => db[courseId])
     );
   }
 
   getCourseRegistration(courseId: number): Observable<CourseRegistration> {
-    const registration: CourseRegistration = this._getCourseRegistration(courseId);
-    return of(registration);
+    return this.mockDb.pipe(
+      map(_ => this._getCourseRegistration(courseId))
+    );
   }
 
   passSection(courseId: number, sectionId: number, quizAnswers?: QuizAnswers): Observable<CourseRegistration | QuizWrongAnswerResponse> {
@@ -78,13 +107,13 @@ export class CourseViewMockService extends AbstractCourseViewService {
   }
 
   getSection(courseId: number, sectionId: number): Observable<CourseSection> {
-    return this.courseMockDb.pipe(
+    return this.dbSubject.pipe(
       map(db => db[courseId].sections.find(section => section.id == sectionId))
     );
   }
 
   private _getCourse(courseId: number) {
-    return this.courseMockDb.value[courseId];
+    return this._db[courseId];
   }
 
   private _getCourseSection(courseId: number, sectionId: number) {
@@ -141,4 +170,9 @@ interface ICorrectQuestions {
 
 interface ICourseDb {
   [id: number]: Course;
+}
+
+interface ListenerWindow {
+  window: any;
+  courseId: number;
 }
