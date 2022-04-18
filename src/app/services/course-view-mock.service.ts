@@ -117,9 +117,13 @@ export class CourseViewMockService extends AbstractCourseViewService {
       const provided = [...questionAnswer.answerIds].sort();
       correctQuestions[questionAnswer.questionId] = correct.join() == provided.join();
     });
+    const correctQuestionsNumber = Object.values(correctQuestions).filter(value => value).length;
+    const threshold = section.correctAnswersThreshold || Math.floor(section.questions.length * 0.6);
     if(Object.values(correctQuestions).filter(x => !x).length > 0) {
       const response: QuizWrongAnswerResponse = {
-        correctQuestionAnswers: correctQuestions
+        correctQuestionAnswers: correctQuestionsNumber > threshold ? correctQuestions : null,
+        remainingAttempts: 1,
+        message: "Some or all of your answers are incorrect. Please try again."
       }
       return response;
     }

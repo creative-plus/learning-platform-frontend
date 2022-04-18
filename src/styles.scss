@@ -139,10 +139,14 @@ button.with-icon {
 
   .text {
     flex: 1;
+    .title {
+      font-weight: 600;
+    }
   }
 
   &.severe {
     background: #f44336;
+    color: #212121;
     mat-icon {
       color: #212121;
     }

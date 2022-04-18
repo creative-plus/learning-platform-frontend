@@ -16,7 +16,9 @@ export abstract class AbstractCourseViewService {
 }
 
 export interface QuizWrongAnswerResponse {
-  correctQuestionAnswers: ICorrectQuestionAnswers;
+  message: string;
+  remainingAttempts: number;
+  correctQuestionAnswers?: ICorrectQuestionAnswers;
 }
 
 export interface ICorrectQuestionAnswers {

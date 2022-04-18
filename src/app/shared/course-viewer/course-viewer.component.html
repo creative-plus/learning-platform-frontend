@@ -31,17 +31,20 @@
       </div>
       <quill-view-html class="section-content" *ngIf="currentSection.type == 'learning'" [content]="contentSectionLearning.content"></quill-view-html>
       <div class="section-quiz" *ngIf="quizAnswersForm && currentSection.type == 'quiz'" [formGroup]="quizAnswersForm">
-        <div class="tip-card severe" *ngIf="quizHasWrongAnswers">
+        <div class="tip-card severe" *ngIf="quizFailedAttempt">
           <mat-icon>error</mat-icon>
-          <span class="text">Seems like you got some answers wrong. Please correct the quiz.</span>
+          <div class="text">
+            <div class="title">{{ quizFailedAttempt.remainingAttempts }} remaining attempts</div>
+            <div>Seems like you got some answers wrong. Please correct the quiz.</div>
+          </div>
         </div>
         <div class="quiz-question" *ngFor="let question of contentSectionQuiz.questions; let i = index" formArrayName="answers">
           <h1 class="question-title">
             <span>{{ i + 1 }}. {{ question.text }}</span>
             <mat-icon 
-              *ngIf="correctQuestionAnswers[question.id] != null" 
-              [ngClass]="{ success: correctQuestionAnswers[question.id], severe: !correctQuestionAnswers[question.id] }">
-              {{ correctQuestionAnswers[question.id] ? 'done' : 'close' }}
+              *ngIf="quizFailedAttempt?.correctQuestionAnswers && quizFailedAttempt.correctQuestionAnswers[question.id] != null" 
+              [ngClass]="{ success: quizFailedAttempt.correctQuestionAnswers[question.id], severe: !quizFailedAttempt.correctQuestionAnswers[question.id] }">
+              {{ quizFailedAttempt.correctQuestionAnswers[question.id] ? 'done' : 'close' }}
             </mat-icon>
           </h1>
           <div class="question-answers" *ngIf="!question.multipleAnswer" [formGroupName]="i">
