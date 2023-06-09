@@ -24,14 +24,14 @@ export class TraineeService {
 
   addTrainee(trainee: TraineeRequest): Observable<Trainee> {
     const url = `${environment.apiUrl}/trainees/`;
-    return this.http.post<Trainee>(url, {...trainee, organizationId: 1}, this.auth.getPrivateHeaders()).pipe(
+    return this.http.post<Trainee>(url, { ...trainee, organizationId: 1 }, this.auth.getPrivateHeaders()).pipe(
       catchError(this.handleError<Trainee>('addTrainee', null))
     );
   }
 
   editTrainee(trainee: TraineeRequest): Observable<Trainee> {
     const url = `${environment.apiUrl}/trainees/${trainee.id}`;
-    return this.http.put<Trainee>(url, trainee, this.auth.getPrivateHeaders()).pipe(
+    return this.http.put<Trainee>(url, { ...trainee, organizationId: 1 }, this.auth.getPrivateHeaders()).pipe(
       catchError(this.handleError<Trainee>('editTrainee', null))
     );
   }
