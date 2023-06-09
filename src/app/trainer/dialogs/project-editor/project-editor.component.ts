@@ -30,6 +30,10 @@ export class ProjectEditorComponent implements OnInit {
       "description": new FormControl(this.data.project?.description, [Validators.maxLength(255)]),
       "startDate": new FormControl(this.data.project?.startDate, [Validators.required]),
       "endDate": new FormControl(this.data.project?.endDate, [Validators.required]),
+      "totalBudget": new FormControl(this.data.project?.totalBudget, [Validators.required, Validators.min(0)]),
+      "financeMean": new FormControl(this.data.project?.financeMean, [Validators.required]),
+      "minAge": new FormControl(this.data.project?.minAge, [Validators.required, Validators.min(0)]),
+      "maxAge": new FormControl(this.data.project?.maxAge, [Validators.required, Validators.min(0)]),
     }, 
     [ GreaterThanValidator("endDate", "startDate", "startDateGreater") ]
   );

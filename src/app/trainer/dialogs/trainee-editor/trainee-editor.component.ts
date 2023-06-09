@@ -27,9 +27,14 @@ export class TraineeEditorComponent implements OnInit {
     lastName: new FormControl(this.data.trainee?.lastName, [Validators.required]),
     email: new FormControl(this.data.trainee?.email, [Validators.required]),
     phoneNumber: new FormControl(this.data.trainee?.phoneNumber),
-    country: new FormControl(this.data.trainee?.country),
+    country: new FormControl(this.data.trainee?.country, [Validators.required]),
+    birthDate: new FormControl(this.data.trainee?.birthDate, [Validators.required]),
     projectIds: new FormControl(this.data.trainee?.projects?.map(p => p.id) || [], [Validators.required])
   });
+
+  get countries() {
+    return ["RO", "FR"];
+  }
   
   ngOnInit(): void {
     if(this.data.mode == 'edit') {

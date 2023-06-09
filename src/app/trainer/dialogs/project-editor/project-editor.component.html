@@ -27,7 +27,29 @@
     <mat-form-field appearance="outline" fxFlex="100">
       <mat-label>Project end date</mat-label>
       <input matInput type="date" formControlName="endDate" name="projectEndDate">
+    </mat-form-field>
 
+    <mat-form-field appearance="outline" fxFlex="100">
+      <mat-label>Total budget</mat-label>
+      <input matInput type="number" formControlName="totalBudget" name="projectBudget">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" fxFlex="100">
+      <mat-label>Finance mean</mat-label>
+      <mat-select formControlName="financeMean" name="financeMean">
+        <mat-option value="ax_1">Ax 1</mat-option>
+        <mat-option value="ax_2">Ax 2</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" fxFlex="100">
+      <mat-label>Min age</mat-label>
+      <input matInput type="number" formControlName="minAge" name="minAge">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" fxFlex="100">
+      <mat-label>Max age</mat-label>
+      <input matInput type="number" formControlName="maxAge" name="maxAge">
     </mat-form-field>
   </form>
 </mat-dialog-content>

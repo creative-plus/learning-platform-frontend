@@ -3,6 +3,7 @@ import { User } from "./User";
 
 export interface Trainee extends User {
   country?: string;
+  birthDate?: Date;
   projects?: Project[];
 }
 

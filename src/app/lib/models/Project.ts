@@ -4,4 +4,8 @@ export interface Project {
   description: string;
   startDate: string;
   endDate: string;
+  totalBudget: number;
+  financeMean: string;
+  minAge: number;
+  maxAge: number;
 }
